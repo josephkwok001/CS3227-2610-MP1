@@ -112,7 +112,8 @@ Next time. Put one invalid example in the prompt (expense 12.50 /food with no de
 
 ### Increment 06 — Persist to file
 
-**Status:** draft — rewrite in first person the same day.
+**Status:** draft — For this increment I asked Cursor to add file persistence only — no GUI and no new commands. I wanted it to save the live list after each add or delete, including after a delete, so a restart would not bring deleted rows back. The model chose data/budgie.txt and a Duke-style line format (E|amount|category|description). That is a product choice I should own, not something the assignment stated. I still need to run the app myself: add, delete, bye, start again, and list. Unit tests are not the same as seeing data/budgie.txt in the project folder. Missing-file first run should just look empty.
+
 
 **Suggested first-person text (edit then keep):**
 
@@ -132,7 +133,9 @@ For this increment I asked Cursor to add file persistence only — no GUI and no
 
 ### Increment 07 — Error messages
 
-**Status:** draft — rewrite in first person the same day.
+**Status:** draft — For this increment I asked Cursor to finish the error-handling bullet on the same persist branch: unknown command, missing amount, negative money, and unknown delete index. Some of those already existed as generic usage strings. What I wanted was four messages a peer tester can check against the User Guide. The model treated missing amount as expense with no amount token or a line that starts with /category, and it split negative amounts away from zero / too-many-decimals. That split is a design call I should own. I still need to type the four cases in the running app myself. GUI was not part of this increment.
+
+
 
 **Suggested first-person text (edit then keep):**
 
@@ -149,6 +152,36 @@ For this increment I asked Cursor to finish the error-handling bullet on the sam
 - **How it was verified (agent):** unit tests + `./gradlew check`. Joseph should still type the four cases in the app.
 - **Engineering judgement:** Did not add GUI. Did not turn zero amounts into the negative message. Did not treat `delete 0` as unknown index (still usage).
 - **Next time:** JavaFX GUI.
+
+### Increment 08 — JavaFX GUI
+
+**Status:** draft — rewrite in first person the same day.
+
+**Suggested first-person text (edit then keep):**
+
+For this increment I asked Cursor to finish remaining P0: a JavaFX chat UI with a Launcher class, plus a fat JAR. I kept the same commands; the GUI is another front end on Budgie.getResponse, not a second parser. The model copied the SE-EDU Launcher pattern so `java -jar` does not die with “JavaFX runtime components are missing.” Chat bubbles and CSS are product choices I should own. I still need to open `./gradlew run` myself, type help / expense / bye, and confirm the window closes. There are no GUI tests by design.
+
+- **Feature / increment:** JavaFX window via `Launcher` / `MainApp`. Same commands as the CLI. No P1 commands.
+- **Prompts used:** Finish remaining P0; include commit message, PR description, and reflection draft.
+- **Assumptions the LLM made:** `./gradlew run` opens GUI; `./gradlew runCli` keeps the old terminal; bubbles instead of Duke avatar PNGs.
+- **What to verify:** `./gradlew check`; `./gradlew run` opens a window; type `help`, add, `list`, `bye` closes the window.
+- **How it was verified (agent):** `./gradlew check` (and shadowJar if that run succeeded). Joseph should still open the GUI.
+- **Engineering judgement:** Did not add budget/summary/find. Did not write automated GUI tests.
+- **Next time:** Upload `budgie.jar` as a GitHub Release after merge.
+
+### Increment 09 — Fat JAR / release packaging
+
+**Status:** draft — rewrite in first person the same day.
+
+**Suggested first-person text (edit then keep):**
+
+Packaging was bundled with the GUI increment because a GUI that testers cannot launch from a JAR is not P0. Shadow writes `build/libs/budgie.jar` with `Launcher` as the main class, and Gradle pulls JavaFX natives for Windows, Linux, and macOS (including Apple Silicon). Creating the actual GitHub Release is still a click I have to do after this is on `master` — attaching that JAR — because graders download from Releases. I should run `java -jar build/libs/budgie.jar` from a folder myself before I tag it.
+
+- **Feature / increment:** `./gradlew shadowJar` → `budgie.jar`; UG/README match. GitHub Release is for Joseph after merge.
+- **What to verify:** `java -jar build/libs/budgie.jar` opens the same GUI; data file is created next to the working directory.
+- **How it was verified (agent):** intended `./gradlew shadowJar`. Joseph must run the JAR and create the Release.
+- **Engineering judgement:** Followed AddressBook-style JavaFX classifiers instead of the OpenJFX Gradle plugin.
+- **Next time:** Optional P1 only if v1.0 peer tests are clean.
 
 
 

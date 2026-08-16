@@ -2,7 +2,7 @@
 
 Budgie is a personal budget tracker with a chat-style interface.
 
-This guide describes **v0.7** only. Features that are not listed here are not in the current product.
+This guide describes **v1.0** only. Features that are not listed here are not in the current product.
 
 ## 1. Setup
 
@@ -12,7 +12,7 @@ Requirements:
 
 ### Option A — run from source
 
-In the project root:
+In the project root. A chat window should open:
 
 ```bash
 ./gradlew run
@@ -24,29 +24,37 @@ On Windows:
 gradlew.bat run
 ```
 
+The text-only CLI is still available as `./gradlew runCli` if you need it.
+
 ### Option B — run the JAR
+
+Build a fat JAR:
 
 ```bash
 ./gradlew shadowJar
-java -jar build/libs/budgie-0.1.jar
+java -jar build/libs/budgie.jar
 ```
 
-Copy the JAR into an empty folder if you want to run it the same way a release user would:
+Peer testers can download `budgie.jar` from the GitHub Releases page instead of building. Copy it into an empty folder, then:
 
 ```bash
-java -jar budgie-0.1.jar
+java -jar budgie.jar
 ```
+
+Saved data is written to `data/budgie.txt` in the folder you ran the JAR from.
 
 ## 2. Starting Budgie
 
-When Budgie starts, you should see a banner and a greeting similar to:
+When Budgie starts, a window titled **Budgie** should open. Type commands in the text field at the bottom and press **Enter** or **Send**.
+
+The first reply is a greeting similar to:
 
 ```
 Hello! I'm Budgie, your personal budget tracker.
 Type `help` to see what I can do.
 ```
 
-Empty lines are ignored.
+Empty input is ignored. `bye` shows the goodbye message and then closes the window.
 
 ## 3. Features
 
@@ -305,8 +313,8 @@ There is no transaction numbered 99. Use list to see valid indexes.
 If `data/budgie.txt` already exists from an earlier run, `list` may show extra rows. Delete those rows first, or remove the file, before following the numbered steps.
 
 1. Run `./gradlew check` — tests and Checkstyle should pass.
-2. Run `./gradlew run`.
-3. Type `help` — the output should match section 3.1.
+2. Run `./gradlew run` — a Budgie chat window should open.
+3. Type `help` in the text field and press Enter — the output should match section 3.1.
 4. Type `expense 12.50 /food lunch` — you should see `Added expense: $12.50 /food lunch`.
 5. Type `income 2500 /salary August pay` — you should see `Added income: $2500.00 /salary August pay`.
 6. Type `income 2500 /salary` — you should see the usage message from section 3.3.
@@ -319,6 +327,6 @@ If `data/budgie.txt` already exists from an earlier run, `list` may show extra r
 13. Type `expense /food lunch` — you should see the missing-amount message from section 3.8.
 14. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
 15. Type `delete 99` — you should see the unknown-index message from section 3.8. The list must stay unchanged.
-16. Type `bye` to exit.
+16. Type `bye` — you should see the goodbye message, then the window should close.
 
 If a step above does not match this guide, treat it as a product bug.
