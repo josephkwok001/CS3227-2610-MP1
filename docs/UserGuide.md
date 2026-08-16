@@ -2,7 +2,7 @@
 
 Budgie is a desktop **personal budget tracker** with a **chat-style JavaFX window**. You type commands (for example `expense 12.50 /food lunch`) and Budgie replies in the conversation.
 
-This guide describes **v1.0** only. Commands that are not listed here are not in the product.
+This guide describes **v1.1** only. Commands that are not listed here are not in the product.
 
 If a term is unfamiliar, see the [Glossary](#glossary).
 
@@ -27,7 +27,7 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 
    Install guides: [Windows](https://se-education.org/guides/tutorials/javaInstallationWindows.html), [macOS](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-2. Download `budgie.jar` from the [v1.0 GitHub Release](https://github.com/josephkwok001/CS3227-2610-MP1/releases/tag/v1.0).
+2. Download `budgie.jar` from GitHub Releases **if a v1.1 (or later) JAR is published**. Until then, run from source (`./gradlew run`) or build `./gradlew shadowJar`. The **v1.0** Release JAR does not include `find`.
 
 3. Copy the JAR into an empty folder. That folder becomes Budgie’s home folder (`data/budgie.txt` is created next to the JAR when you add a transaction).
 
@@ -51,6 +51,7 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 
    - `help`
    - `expense 12.50 /food lunch`
+   - `find food`
    - `list`
    - `bye` (shows a goodbye message, then closes the window)
 
@@ -62,6 +63,7 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 | Add an expense | `expense AMOUNT /CATEGORY DESCRIPTION` | `expense 12.50 /food lunch` |
 | Add income | `income AMOUNT /CATEGORY DESCRIPTION` | `income 2500 /salary August pay` |
 | List transactions | `list` | `list` |
+| Find transactions | `find KEYWORD` | `find food` |
 | Delete a transaction | `delete INDEX` | `delete 1` |
 | Exit | `bye` | `bye` |
 
@@ -75,7 +77,7 @@ There is no `save` command. Add, income, and delete write `data/budgie.txt` imme
 - **Description** is the rest of the line. It keeps your capitalisation (`August pay` stays `August pay`).
 - The **command word** is case-insensitive (`Help`, `EXPENSE`, `Bye` work). Extra words after `help` or `list` are ignored.
 - **Index** for `delete` is the **1-based** number shown by `list`. After a delete, later rows **renumber**. Indexes are not permanent IDs.
-- Empty input is ignored. Unknown commands (for example `find food`) are rejected; they are not features.
+- Empty input is ignored. Unknown commands (for example `budget 800`) are rejected; they are not features.
 
 ## Features
 
@@ -99,6 +101,7 @@ Here is what I can do for now:
   expense  - add an expense (e.g. expense 12.50 /food lunch)
   income   - add income (e.g. income 2500 /salary August pay)
   list     - show all expenses and incomes
+  find     - find transactions by category, description, or amount (e.g. find food)
   delete   - delete a transaction by its list number (e.g. delete 1)
   bye      - exit Budgie
 ```
@@ -199,6 +202,43 @@ No transactions yet. Add an expense or income first.
 
 The list is loaded from `data/budgie.txt` when Budgie starts.
 
+### Finding transactions: `find`
+
+Shows transactions whose **category**, **description**, or **amount** matches `KEYWORD`. Matching is case-insensitive. `find August pay` uses the whole remainder of the line as one keyword.
+
+Format: `find KEYWORD`
+
+The numbers in the result are the same as `list`, so you can `delete` that row afterwards.
+
+Sample session (after the two adds in the `list` example):
+
+```
+find food
+```
+
+```
+Here are the matching transactions:
+1. [expense] $12.50 /food lunch
+```
+
+```
+find 12.50
+```
+
+also shows that expense. `find 12.5` matches the same amount. `find 1` does **not** match `$12.50` (it does not treat a digit inside a larger amount as a hit).
+
+If nothing matches:
+
+```
+find rent
+```
+
+```
+No matching transactions found.
+```
+
+`find` with no keyword prints usage. `find` does not change saved data.
+
 ### Deleting a transaction: `delete`
 
 Removes one transaction using the number shown by `list`. The delete is saved immediately.
@@ -263,11 +303,11 @@ Bad input does not crash Budgie. These four cases have distinct messages.
 **Unknown command**
 
 ```
-find food
+budget 800
 ```
 
 ```
-Sorry, I don't understand `find food`.
+Sorry, I don't understand `budget 800`.
 Type `help` to see what I can do.
 ```
 
@@ -317,19 +357,21 @@ If `data/budgie.txt` already exists from an earlier run, `list` may show extra r
 5. Type `income 2500 /salary August pay` — you should see `Added income: $2500.00 /salary August pay`.
 6. Type `income 2500 /salary` — you should see the usage message under [Adding income](#adding-income-income).
 7. Type `list` — you should see numbered `[expense]` and `[income]` lines matching [Listing transactions](#listing-transactions-list).
-8. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
-9. Type `list` — only the income should remain, now as number 1.
-10. Type `bye` — you should see the goodbye message, then the window should close.
-11. Run `./gradlew run` again. Type `list` — the income from step 5 should still be there as number 1.
-12. Type `find food` — you should see the unknown-command message under [Errors](#errors).
-13. Type `expense /food lunch` — you should see the missing-amount message under [Errors](#errors).
-14. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
-15. Type `delete 99` — you should see the unknown-index message under [Errors](#errors). The list must stay unchanged.
-16. Type `bye` — you should see the goodbye message, then the window should close.
+8. Type `find food` — you should see the expense as number 1 under [Finding transactions](#finding-transactions-find).
+9. Type `find rent` — you should see `No matching transactions found.`
+10. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
+11. Type `list` — only the income should remain, now as number 1.
+12. Type `bye` — you should see the goodbye message, then the window should close.
+13. Run `./gradlew run` again. Type `list` — the income from step 5 should still be there as number 1.
+14. Type `budget 800` — you should see the unknown-command message under [Errors](#errors).
+15. Type `expense /food lunch` — you should see the missing-amount message under [Errors](#errors).
+16. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
+17. Type `delete 99` — you should see the unknown-index message under [Errors](#errors). The list must stay unchanged.
+18. Type `bye` — you should see the goodbye message, then the window should close.
 
 If a step above does not match this guide, treat it as a product bug.
 
-You can repeat the same path with `java -jar budgie.jar` from an empty folder (download from the [v1.0 Release](https://github.com/josephkwok001/CS3227-2610-MP1/releases/tag/v1.0)).
+You can repeat the same path from source with `./gradlew shadowJar` then `java -jar build/libs/budgie.jar`. The published **v1.0** GitHub Release JAR does not include `find`; rebuild the JAR from this source if you need a tester JAR with `find`.
 
 ## FAQ
 
@@ -342,8 +384,11 @@ You can repeat the same path with `java -jar budgie.jar` from an empty folder (d
 **Q: Does each transaction keep a fixed number?**
 **A:** No. `INDEX` is the current `list` position, starting at 1. After `delete`, later rows move up.
 
-**Q: Why was `find food` rejected?**
-**A:** v1.0 has no `find` command. Only the commands in the [command summary](#command-summary) are supported.
+**Q: Why was `budget 800` rejected?**
+**A:** There is no `budget` command in this version. Only the commands in the [command summary](#command-summary) are supported.
+
+**Q: Can I `delete` using a number from `find`?**
+**A:** Yes. `find` prints the same numbers as `list`. `delete 1` still means the first row of the full list.
 
 **Q: Which operating systems does Budgie run on?**
 **A:** Windows, macOS, and Linux, as long as you use **Java 17** (or later) with the fat JAR.
@@ -373,6 +418,7 @@ You can repeat the same path with `java -jar budgie.jar` from an empty folder (d
 | **Command word** | First token of a line (`help`, `expense`, `list`, …). Case-insensitive. |
 | **Description** | Free text after category, for example `lunch` or `August pay`. |
 | **Entry / transaction** | One recorded expense or income shown by `list`. |
+| **Find keyword** | Text after `find`. Matches category, description, or amount. |
 | **GUI** | The JavaFX chat window (`./gradlew run` or `java -jar budgie.jar`). |
 | **Index** | 1-based row number from the current `list`. Used by `delete`. |
 | **Data file** | `data/budgie.txt` next to the working directory; auto-saved after changes. |

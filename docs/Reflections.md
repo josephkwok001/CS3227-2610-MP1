@@ -199,6 +199,22 @@ I asked Cursor to expand the User Guide and Developer Guide using the same secti
 - **Engineering judgement:** Kept v1.0 scope. Planned enhancements listed as not shipped.
 - **Next time:** Code-quality refactor (shared Expense/Income) if there is spare time; otherwise polish reflections.
 
+### Increment 11 — Find transactions
+
+**Status:** draft — rewrite in first person the same day.
+
+**Suggested first-person text (edit then keep):**
+
+I asked Cursor to add only `find KEYWORD`, not budget, summary, dates, or edit. It searches category and description as case-insensitive substrings, and amount by numeric value so `12.5` matches `$12.50` but `find 1` does not hit `$12.50`. Results keep `list` numbers so delete still makes sense. The unknown-command example in the UG is now `budget 800` because `find food` is a real command. I still need to type `find food` in the GUI myself. The published v1.0 JAR does not have this until I rebuild and maybe tag v1.1.
+
+- **Feature / increment:** `find KEYWORD` only.
+- **Prompts used:** Implement find only.
+- **Assumptions the LLM made:** Original list indexes; amount equality not digit-contains; multi-word keyword is the rest of the line.
+- **What to verify:** `./gradlew check`; `find food`, `find 12.50`, `find rent`, `find` usage; `budget 800` is unknown.
+- **How it was verified (agent):** unit tests + intended `./gradlew check`.
+- **Engineering judgement:** Did not add budget/summary. Did not number find results 1..n independently of list.
+- **Next time:** Optional `summary` if find is clean.
+
 
 
 

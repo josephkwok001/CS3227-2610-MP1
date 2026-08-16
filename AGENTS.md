@@ -43,4 +43,4 @@ Prefer small methods, custom exceptions for user/environment errors, assertions 
 7. Errors
 8. JavaFX GUI
 9. Fat JAR release
-10. P1 only if P0 is clean: budget, summary, find, dates, edit (next, optional)
+10. P1: `find` (current source). Next optional: budget, summary, dates, edit
