@@ -4,7 +4,7 @@ Budgie is a personal budget tracker with a chat-style interface. This is an indi
 
 ## Current version
 
-**v0.3** — greet, `help`, `bye`, in-memory `expense` and `income`. Not yet: list, delete, or saving to disk.
+**v0.4** — greet, `help`, `bye`, in-memory `expense`, `income`, and `list`. Not yet: delete, or saving to disk.
 
 ## Quick start
 

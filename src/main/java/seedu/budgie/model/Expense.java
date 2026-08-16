@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 /**
  * An expense recorded during the current session.
  */
-public class Expense {
+public class Expense implements Entry {
 
     private final BigDecimal amount;
     private final String category;
@@ -49,5 +49,10 @@ public class Expense {
     public String toDisplayString() {
         String formattedAmount = amount.setScale(2, RoundingMode.HALF_UP).toPlainString();
         return "$" + formattedAmount + " /" + category + " " + description;
+    }
+
+    @Override
+    public String toListLine() {
+        return "[expense] " + toDisplayString();
     }
 }

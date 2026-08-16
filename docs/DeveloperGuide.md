@@ -1,6 +1,6 @@
 # Budgie Developer Guide
 
-This developer guide describes **v0.3** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
+This developer guide describes **v0.4** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
 
 ## 1. Setting up
 
@@ -12,7 +12,7 @@ IDE: import the Gradle project. Do not commit IDE-specific files.
 
 ## 2. Design overview
 
-v0.3 uses a small command loop with an in-memory book of expenses and incomes:
+v0.4 uses a small command loop with an in-memory book of expenses and incomes:
 
 ```mermaid
 flowchart LR
@@ -27,9 +27,9 @@ flowchart LR
 - `Ui` — read input, print messages
 - `Parser` — map a line of text to a `Command`; throw `BudgieException` for bad `expense` or `income` arguments
 - `Command` — execute against `ExpenseBook` and report whether to exit
-- `Expense` / `Income` / `ExpenseBook` — session-only model (not persisted)
+- `Expense` / `Income` implement `Entry`; `ExpenseBook` stores them in insertion order for `list`
 
-Command objects: `HelpCommand`, `ExitCommand`, `UnknownCommand`, `AddExpenseCommand`, `AddIncomeCommand`. List, delete, and storage are not implemented yet.
+Command objects: `HelpCommand`, `ExitCommand`, `UnknownCommand`, `AddExpenseCommand`, `AddIncomeCommand`, `ListCommand`. Delete and storage are not implemented yet.
 
 ## 3. Current implementation notes
 
@@ -43,7 +43,8 @@ Command objects: `HelpCommand`, `ExitCommand`, `UnknownCommand`, `AddExpenseComm
 ## 4. Testing
 
 - JUnit 5 tests live under `src/test/java`.
-- `ParserTest` covers `help`, `bye`, unknown input, valid/invalid `expense`, and valid/invalid `income`.
+- `ParserTest` covers `help`, `bye`, `list`, unknown input, valid/invalid `expense`, and valid/invalid `income`.
+- `ListCommandTest` checks empty-book output and mixed insertion order.
 - `AddExpenseCommandTest` and `AddIncomeCommandTest` check that execute adds to `ExpenseBook`.
 - `HelpCommandTest` checks the help text stays consistent with the User Guide.
 - Run the full gate with `./gradlew check`.

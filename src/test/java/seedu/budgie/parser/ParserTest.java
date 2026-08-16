@@ -15,6 +15,7 @@ import seedu.budgie.command.AddIncomeCommand;
 import seedu.budgie.command.Command;
 import seedu.budgie.command.ExitCommand;
 import seedu.budgie.command.HelpCommand;
+import seedu.budgie.command.ListCommand;
 import seedu.budgie.command.UnknownCommand;
 import seedu.budgie.exception.BudgieException;
 
@@ -45,7 +46,7 @@ public class ParserTest {
 
     @Test
     public void parse_unknownInput_returnsUnknownCommand() throws BudgieException {
-        Command command = parser.parse("list");
+        Command command = parser.parse("find food");
         assertInstanceOf(UnknownCommand.class, command);
         assertFalse(command.isExit());
     }
@@ -123,5 +124,18 @@ public class ParserTest {
     @Test
     public void parse_incomeZeroAmount_throwsBudgieException() {
         assertThrows(BudgieException.class, () -> parser.parse("income 0 /salary August pay"));
+    }
+
+    @Test
+    public void parse_list_returnsListCommand() throws BudgieException {
+        Command command = parser.parse("list");
+        assertInstanceOf(ListCommand.class, command);
+        assertFalse(command.isExit());
+    }
+
+    @Test
+    public void parse_listDifferentCase_returnsListCommand() throws BudgieException {
+        Command command = parser.parse("LIST");
+        assertInstanceOf(ListCommand.class, command);
     }
 }
