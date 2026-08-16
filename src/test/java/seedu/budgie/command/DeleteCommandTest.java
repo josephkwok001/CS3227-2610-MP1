@@ -33,7 +33,15 @@ public class DeleteCommandTest {
     public void execute_indexTooLarge_throwsBudgieException() throws BudgieException {
         ExpenseBook book = new ExpenseBook();
         new AddExpenseCommand(new Expense(new BigDecimal("12.50"), "food", "lunch")).execute(book);
-        assertThrows(BudgieException.class, () -> new DeleteCommand(2).execute(book));
+        BudgieException thrown = assertThrows(BudgieException.class, () -> new DeleteCommand(2).execute(book));
+        assertEquals(ExpenseBook.unknownIndexMessage(2), thrown.getMessage());
         assertEquals(1, book.size());
+    }
+
+    @Test
+    public void execute_emptyBook_throwsBudgieException() {
+        ExpenseBook book = new ExpenseBook();
+        BudgieException thrown = assertThrows(BudgieException.class, () -> new DeleteCommand(1).execute(book));
+        assertEquals(ExpenseBook.unknownIndexMessage(1), thrown.getMessage());
     }
 }

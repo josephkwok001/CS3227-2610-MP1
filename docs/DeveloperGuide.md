@@ -1,6 +1,6 @@
 # Budgie Developer Guide
 
-This developer guide describes **v0.6** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
+This developer guide describes **v0.7** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
 
 ## 1. Setting up
 
@@ -12,7 +12,7 @@ IDE: import the Gradle project. Do not commit IDE-specific files. Runtime data u
 
 ## 2. Design overview
 
-v0.6 uses a small command loop, an in-memory book, and a text save file:
+v0.7 uses a small command loop, an in-memory book, and a text save file:
 
 ```mermaid
 flowchart LR
@@ -39,7 +39,9 @@ GUI is not implemented yet.
 - The command word is case-insensitive; expense descriptions keep the user's capitalisation.
 - Blank lines are skipped in `Budgie.run()`.
 - `Parser` uses an assertion that input is non-null (internal assumption).
-- Invalid `expense` / `income` format, bad `delete` indexes, and missing delete index are `BudgieException`s shown to the user.
+- Invalid `expense` / `income` format, missing amount, negative amount, bad `delete` indexes, and missing delete index are `BudgieException`s shown to the user.
+- Missing amount (`expense` with no amount token, or an argument list that starts with `/category`) is a separate message from the general usage string.
+- Negative amounts use `Amount cannot be negative.`; zero and extra decimals share the generic amount message.
 - Other unknown text still goes through `UnknownCommand`.
 - Save format is one line per transaction: `E|12.50|food|lunch` or `I|2500.00|salary|August pay`. The last field is the rest of the line, so descriptions may contain `|`.
 - A missing save file starts an empty book. Invalid lines are skipped and counted. Saving after a mutating command includes the empty-book case so deletes are not undone on the next launch.
@@ -48,9 +50,9 @@ GUI is not implemented yet.
 ## 4. Testing
 
 - JUnit 5 tests live under `src/test/java`.
-- `ParserTest` covers `help`, `bye`, `list`, `delete`, unknown input, valid/invalid `expense`, and valid/invalid `income`.
+- `ParserTest` covers `help`, `bye`, `list`, `delete`, unknown input, missing amount, negative amount, and other valid/invalid `expense` and `income` cases.
 - `ListCommandTest` checks empty-book output and mixed insertion order.
-- `DeleteCommandTest` checks a valid delete and an out-of-range index.
+- `DeleteCommandTest` checks a valid delete, an out-of-range index message, and delete on an empty book.
 - `AddExpenseCommandTest` and `AddIncomeCommandTest` check that execute adds to `ExpenseBook`.
 - `HelpCommandTest` checks the help text stays consistent with the User Guide.
 - `StorageTest` covers missing file, round-trip (including `|` in a description), save-after-delete, empty file after deleting the last row, and skipped corrupt lines.

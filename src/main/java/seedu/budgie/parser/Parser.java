@@ -25,6 +25,12 @@ public class Parser {
             + "Example: expense 12.50 /food lunch";
     public static final String INCOME_USAGE = "Income must be: income AMOUNT /CATEGORY DESCRIPTION\n"
             + "Example: income 2500 /salary August pay";
+    public static final String EXPENSE_MISSING_AMOUNT = "Expense is missing an amount.\n"
+            + "Example: expense 12.50 /food lunch";
+    public static final String INCOME_MISSING_AMOUNT = "Income is missing an amount.\n"
+            + "Example: income 2500 /salary August pay";
+    public static final String AMOUNT_NEGATIVE = "Amount cannot be negative.";
+    public static final String AMOUNT_INVALID = "Amount must be a positive number with up to 2 decimal places.";
     public static final String DELETE_USAGE = "Delete must be: delete INDEX\n"
             + "Example: delete 1\n"
             + "INDEX is the number shown by list.";
@@ -79,12 +85,12 @@ public class Parser {
     }
 
     private AddExpenseCommand parseExpense(String arguments) throws BudgieException {
-        ParsedEntry entry = parseEntry(arguments, EXPENSE_USAGE);
+        ParsedEntry entry = parseEntry(arguments, EXPENSE_USAGE, EXPENSE_MISSING_AMOUNT);
         return new AddExpenseCommand(new Expense(entry.amount, entry.category, entry.description));
     }
 
     private AddIncomeCommand parseIncome(String arguments) throws BudgieException {
-        ParsedEntry entry = parseEntry(arguments, INCOME_USAGE);
+        ParsedEntry entry = parseEntry(arguments, INCOME_USAGE, INCOME_MISSING_AMOUNT);
         return new AddIncomeCommand(new Income(entry.amount, entry.category, entry.description));
     }
 
@@ -105,7 +111,11 @@ public class Parser {
         return new DeleteCommand(index);
     }
 
-    private ParsedEntry parseEntry(String arguments, String usage) throws BudgieException {
+    private ParsedEntry parseEntry(String arguments, String usage, String missingAmountMessage)
+            throws BudgieException {
+        if (isMissingAmount(arguments)) {
+            throw new BudgieException(missingAmountMessage);
+        }
         Matcher matcher = ENTRY_ARGS.matcher(arguments.trim());
         if (!matcher.matches()) {
             throw new BudgieException(usage);
@@ -132,14 +142,29 @@ public class Parser {
         try {
             amount = new BigDecimal(amountText);
         } catch (NumberFormatException e) {
-            throw new BudgieException("Amount must be a positive number with up to 2 decimal places.");
+            throw new BudgieException(AMOUNT_INVALID);
+        }
+        if (amount.signum() < 0) {
+            throw new BudgieException(AMOUNT_NEGATIVE);
         }
         if (amount.scale() > 2) {
-            throw new BudgieException("Amount must be a positive number with up to 2 decimal places.");
+            throw new BudgieException(AMOUNT_INVALID);
         }
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BudgieException("Amount must be a positive number with up to 2 decimal places.");
+            throw new BudgieException(AMOUNT_INVALID);
         }
         return amount;
+    }
+
+    /**
+     * Returns whether {@code arguments} has no amount token (empty, or starts with {@code /category}).
+     */
+    private boolean isMissingAmount(String arguments) {
+        String trimmed = arguments.trim();
+        if (trimmed.isEmpty()) {
+            return true;
+        }
+        String firstToken = trimmed.split("\\s+", 2)[0];
+        return firstToken.startsWith("/");
     }
 }

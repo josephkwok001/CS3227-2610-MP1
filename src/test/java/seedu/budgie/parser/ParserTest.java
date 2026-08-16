@@ -19,6 +19,7 @@ import seedu.budgie.command.HelpCommand;
 import seedu.budgie.command.ListCommand;
 import seedu.budgie.command.UnknownCommand;
 import seedu.budgie.exception.BudgieException;
+import seedu.budgie.model.ExpenseBook;
 
 public class ParserTest {
 
@@ -50,6 +51,8 @@ public class ParserTest {
         Command command = parser.parse("find food");
         assertInstanceOf(UnknownCommand.class, command);
         assertFalse(command.isExit());
+        assertEquals("Sorry, I don't understand `find food`.\n"
+                + "Type `help` to see what I can do.", command.execute(new ExpenseBook()));
     }
 
     @Test
@@ -72,6 +75,14 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_expenseMissingAmount_throwsBudgieException() {
+        BudgieException empty = assertThrows(BudgieException.class, () -> parser.parse("expense"));
+        assertEquals(Parser.EXPENSE_MISSING_AMOUNT, empty.getMessage());
+        BudgieException skippedAmount = assertThrows(BudgieException.class, () -> parser.parse("expense /food lunch"));
+        assertEquals(Parser.EXPENSE_MISSING_AMOUNT, skippedAmount.getMessage());
+    }
+
+    @Test
     public void parse_expenseMissingDescription_throwsBudgieException() {
         BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("expense 12.50 /food"));
         assertEquals(Parser.EXPENSE_USAGE, thrown.getMessage());
@@ -84,17 +95,20 @@ public class ParserTest {
 
     @Test
     public void parse_expenseZeroAmount_throwsBudgieException() {
-        assertThrows(BudgieException.class, () -> parser.parse("expense 0 /food lunch"));
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("expense 0 /food lunch"));
+        assertEquals(Parser.AMOUNT_INVALID, thrown.getMessage());
     }
 
     @Test
     public void parse_expenseNegativeAmount_throwsBudgieException() {
-        assertThrows(BudgieException.class, () -> parser.parse("expense -1 /food lunch"));
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("expense -1 /food lunch"));
+        assertEquals(Parser.AMOUNT_NEGATIVE, thrown.getMessage());
     }
 
     @Test
     public void parse_expenseTooManyDecimals_throwsBudgieException() {
-        assertThrows(BudgieException.class, () -> parser.parse("expense 12.555 /food lunch"));
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("expense 12.555 /food lunch"));
+        assertEquals(Parser.AMOUNT_INVALID, thrown.getMessage());
     }
 
     @Test
@@ -117,6 +131,12 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_incomeMissingAmount_throwsBudgieException() {
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("income /salary August pay"));
+        assertEquals(Parser.INCOME_MISSING_AMOUNT, thrown.getMessage());
+    }
+
+    @Test
     public void parse_incomeMissingDescription_throwsBudgieException() {
         BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("income 2500 /salary"));
         assertEquals(Parser.INCOME_USAGE, thrown.getMessage());
@@ -124,7 +144,15 @@ public class ParserTest {
 
     @Test
     public void parse_incomeZeroAmount_throwsBudgieException() {
-        assertThrows(BudgieException.class, () -> parser.parse("income 0 /salary August pay"));
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("income 0 /salary August pay"));
+        assertEquals(Parser.AMOUNT_INVALID, thrown.getMessage());
+    }
+
+    @Test
+    public void parse_incomeNegativeAmount_throwsBudgieException() {
+        String input = "income -5 /salary August pay";
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse(input));
+        assertEquals(Parser.AMOUNT_NEGATIVE, thrown.getMessage());
     }
 
     @Test

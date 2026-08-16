@@ -130,6 +130,26 @@ For this increment I asked Cursor to add file persistence only — no GUI and no
 - **Engineering judgement:** Did not add GUI. Did not snapshot independently of deletes. Skipped corrupt lines instead of refusing to start.
 - **Next time:** Remaining increment is extra error handling, then JavaFX.
 
+### Increment 07 — Error messages
+
+**Status:** draft — rewrite in first person the same day.
+
+**Suggested first-person text (edit then keep):**
+
+For this increment I asked Cursor to finish the error-handling bullet on the same persist branch: unknown command, missing amount, negative money, and unknown delete index. Some of those already existed as generic usage strings. What I wanted was four messages a peer tester can check against the User Guide. The model treated missing amount as `expense` with no amount token or a line that starts with `/category`, and it split negative amounts away from zero / too-many-decimals. That split is a design call I should own. I still need to type the four cases in the running app myself. GUI was not part of this increment.
+
+- **Feature / increment:** Distinct messages for unknown command, missing amount, negative amount, unknown `delete` index. No new commands and no GUI.
+- **Prompts used:** Fix the errors bullet on the same branch.
+- **Assumptions the LLM made:**
+  - Missing amount: empty args, or first token starts with `/`.
+  - Negative: `Amount cannot be negative.`
+  - Unknown index stays `There is no transaction numbered N. Use list to see valid indexes.`
+  - Unknown command stays the `Sorry, I don't understand ...` text.
+- **What to verify:** `./gradlew check`; type `find food`, `expense /food lunch`, `expense -1 /food lunch`, `delete 99` and match the User Guide.
+- **How it was verified (agent):** unit tests + `./gradlew check`. Joseph should still type the four cases in the app.
+- **Engineering judgement:** Did not add GUI. Did not turn zero amounts into the negative message. Did not treat `delete 0` as unknown index (still usage).
+- **Next time:** JavaFX GUI.
+
 
 
 

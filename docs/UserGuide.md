@@ -2,7 +2,7 @@
 
 Budgie is a personal budget tracker with a chat-style interface.
 
-This guide describes **v0.6** only. Features that are not listed here are not in the current product.
+This guide describes **v0.7** only. Features that are not listed here are not in the current product.
 
 ## 1. Setup
 
@@ -110,7 +110,13 @@ Expense must be: expense AMOUNT /CATEGORY DESCRIPTION
 Example: expense 12.50 /food lunch
 ```
 
-Zero, negative, or extra-decimal amounts (e.g. `0`, `-1`, `12.555`) are also rejected.
+A missing amount (`expense` or `expense /food lunch`) and a negative amount (`expense -1 /food lunch`) have their own messages. See section 3.8.
+
+Zero or extra-decimal amounts (e.g. `0`, `12.555`) are rejected with:
+
+```
+Amount must be a positive number with up to 2 decimal places.
+```
 
 ### 3.3 Add income: `income`
 
@@ -145,7 +151,7 @@ Income must be: income AMOUNT /CATEGORY DESCRIPTION
 Example: income 2500 /salary August pay
 ```
 
-Zero, negative, or extra-decimal amounts are rejected, as with `expense`.
+Zero or extra-decimal amounts are rejected as with `expense`. Missing and negative amounts use the messages in section 3.8.
 
 ### 3.4 List transactions: `list`
 
@@ -208,7 +214,13 @@ Deleted: [expense] $12.50 /food lunch
 
 and the remaining income becomes number 1.
 
-Invalid indexes (`delete`, `delete 0`, `delete 99` when the list is shorter) are rejected. Use `list` again if you are unsure of the number.
+Invalid indexes (`delete`, `delete 0`) print the delete usage message. A number that is not on the list (`delete 99` when only one row exists) prints:
+
+```
+There is no transaction numbered 99. Use list to see valid indexes.
+```
+
+Nothing is removed in that case. Use `list` again if you are unsure of the number.
 
 Deletes are saved immediately. If you delete the last remaining transaction, the save file becomes empty, so a later restart still shows an empty list.
 
@@ -238,21 +250,54 @@ Bye. Keep those coins in the nest!
 
 `bye` is case-insensitive (`Bye` and `BYE` also work).
 
-### 3.8 Unrecognised input
+### 3.8 Errors
 
-Any other command is rejected with a short hint.
+Bad input does not crash Budgie. These four cases have distinct messages.
 
-Sample input:
+**Unknown command**
 
 ```
 find food
 ```
 
-Sample output:
-
 ```
 Sorry, I don't understand `find food`.
 Type `help` to see what I can do.
+```
+
+**Missing amount**
+
+```
+expense /food lunch
+```
+
+```
+Expense is missing an amount.
+Example: expense 12.50 /food lunch
+```
+
+The same idea applies to `income` with no amount.
+
+**Negative amount**
+
+```
+expense -1 /food lunch
+```
+
+```
+Amount cannot be negative.
+```
+
+**Unknown delete index**
+
+If `list` has fewer than 99 rows:
+
+```
+delete 99
+```
+
+```
+There is no transaction numbered 99. Use list to see valid indexes.
 ```
 
 ## 4. How to test (for peer testers)
@@ -270,6 +315,10 @@ If `data/budgie.txt` already exists from an earlier run, `list` may show extra r
 9. Type `list` — only the income should remain, now as number 1.
 10. Type `bye` — Budgie should print the goodbye message and exit.
 11. Run `./gradlew run` again. Type `list` — the income from step 5 should still be there as number 1.
-12. Type `bye` to exit.
+12. Type `find food` — you should see the unknown-command message from section 3.8.
+13. Type `expense /food lunch` — you should see the missing-amount message from section 3.8.
+14. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
+15. Type `delete 99` — you should see the unknown-index message from section 3.8. The list must stay unchanged.
+16. Type `bye` to exit.
 
 If a step above does not match this guide, treat it as a product bug.
