@@ -1,6 +1,7 @@
 package seedu.budgie.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -8,27 +9,30 @@ import java.util.List;
  */
 public class ExpenseBook {
 
-    private final List<Expense> expenses = new ArrayList<>();
-    private final List<Income> incomes = new ArrayList<>();
+    private final List<Entry> entries = new ArrayList<>();
+    private int expenseCount;
+    private int incomeCount;
 
     /**
-     * Adds {@code expense} to the book.
+     * Adds {@code expense} to the book, preserving insertion order for {@code list}.
      *
      * @param expense expense to record
      */
     public void add(Expense expense) {
         assert expense != null : "expense should not be null";
-        expenses.add(expense);
+        entries.add(expense);
+        expenseCount++;
     }
 
     /**
-     * Adds {@code income} to the book.
+     * Adds {@code income} to the book, preserving insertion order for {@code list}.
      *
      * @param income income to record
      */
     public void add(Income income) {
         assert income != null : "income should not be null";
-        incomes.add(income);
+        entries.add(income);
+        incomeCount++;
     }
 
     /**
@@ -37,7 +41,7 @@ public class ExpenseBook {
      * @return number of expenses
      */
     public int size() {
-        return expenses.size();
+        return expenseCount;
     }
 
     /**
@@ -46,6 +50,24 @@ public class ExpenseBook {
      * @return number of incomes
      */
     public int incomeCount() {
-        return incomes.size();
+        return incomeCount;
+    }
+
+    /**
+     * Returns how many expenses and incomes are stored in total.
+     *
+     * @return total number of entries
+     */
+    public int totalCount() {
+        return entries.size();
+    }
+
+    /**
+     * Returns an unmodifiable view of entries in the order they were added.
+     *
+     * @return entries for listing
+     */
+    public List<Entry> getEntries() {
+        return Collections.unmodifiableList(entries);
     }
 }

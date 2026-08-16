@@ -11,6 +11,7 @@ public class HelpCommand implements Command {
             + "  help     - show this help message\n"
             + "  expense  - add an expense (e.g. expense 12.50 /food lunch)\n"
             + "  income   - add income (e.g. income 2500 /salary August pay)\n"
+            + "  list     - show all expenses and incomes\n"
             + "  bye      - exit Budgie";
 
     @Override

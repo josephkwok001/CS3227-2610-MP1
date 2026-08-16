@@ -15,6 +15,7 @@ public class HelpCommandTest {
         assertTrue(message.contains("help"));
         assertTrue(message.contains("expense"));
         assertTrue(message.contains("income"));
+        assertTrue(message.contains("list"));
         assertTrue(message.contains("bye"));
         assertEquals(HelpCommand.MESSAGE, message);
     }

@@ -9,6 +9,7 @@ import seedu.budgie.command.AddIncomeCommand;
 import seedu.budgie.command.Command;
 import seedu.budgie.command.ExitCommand;
 import seedu.budgie.command.HelpCommand;
+import seedu.budgie.command.ListCommand;
 import seedu.budgie.command.UnknownCommand;
 import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.Expense;
@@ -64,6 +65,8 @@ public class Parser {
                 return parseExpense(arguments);
             case "income":
                 return parseIncome(arguments);
+            case "list":
+                return new ListCommand();
             default:
                 return new UnknownCommand(trimmed);
         }

@@ -2,7 +2,7 @@
 
 Budgie is a personal budget tracker with a chat-style interface.
 
-This guide describes **v0.3** only. Features that are not listed here are not in the current product.
+This guide describes **v0.4** only. Features that are not listed here are not in the current product.
 
 ## 1. Setup
 
@@ -67,6 +67,7 @@ Here is what I can do for now:
   help     - show this help message
   expense  - add an expense (e.g. expense 12.50 /food lunch)
   income   - add income (e.g. income 2500 /salary August pay)
+  list     - show all expenses and incomes
   bye      - exit Budgie
 ```
 
@@ -97,7 +98,7 @@ Sample output:
 Added expense: $12.50 /food lunch
 ```
 
-Expenses and incomes are **not listed** and **not saved** to disk yet. They exist only until you type `bye`.
+Transactions are **not saved** to disk yet. They exist only until you type `bye`.
 
 Invalid formats print a usage message instead of recording an expense:
 
@@ -147,7 +148,35 @@ Example: income 2500 /salary August pay
 
 Zero, negative, or extra-decimal amounts are rejected, as with `expense`.
 
-### 3.4 Exit: `bye`
+### 3.4 List transactions: `list`
+
+Shows all expenses and incomes in the order they were added. Numbering starts at 1.
+
+Sample session:
+
+```
+expense 12.50 /food lunch
+income 2500 /salary August pay
+list
+```
+
+Sample `list` output:
+
+```
+Here are your transactions:
+1. [expense] $12.50 /food lunch
+2. [income] $2500.00 /salary August pay
+```
+
+If nothing has been added yet:
+
+```
+No transactions yet. Add an expense or income first.
+```
+
+`list` is case-insensitive. Transactions are still **not saved** to disk.
+
+### 3.5 Exit: `bye`
 
 Ends the session. Any expenses or incomes recorded in this run are discarded.
 
@@ -165,20 +194,20 @@ Bye. Keep those coins in the nest!
 
 `bye` is case-insensitive (`Bye` and `BYE` also work).
 
-### 3.5 Unrecognised input
+### 3.6 Unrecognised input
 
 Any other command is rejected with a short hint.
 
 Sample input:
 
 ```
-list
+find food
 ```
 
 Sample output:
 
 ```
-Sorry, I don't understand `list`.
+Sorry, I don't understand `find food`.
 Type `help` to see what I can do.
 ```
 
@@ -190,6 +219,7 @@ Type `help` to see what I can do.
 4. Type `expense 12.50 /food lunch` — you should see `Added expense: $12.50 /food lunch`.
 5. Type `income 2500 /salary August pay` — you should see `Added income: $2500.00 /salary August pay`.
 6. Type `income 2500 /salary` — you should see the usage message from section 3.3.
-7. Type `bye` — Budgie should print the goodbye message and exit.
+7. Type `list` — you should see numbered `[expense]` and `[income]` lines matching section 3.4.
+8. Type `bye` — Budgie should print the goodbye message and exit.
 
 If a step above does not match this guide, treat it as a product bug.

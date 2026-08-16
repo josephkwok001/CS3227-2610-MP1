@@ -58,7 +58,7 @@ Next time. Put one invalid example in the prompt (expense 12.50 /food with no de
 
 ### Increment 03 — Add income (in memory)
 
-**Status:** Agent draft (Joseph should rewrite this in first person).
+**Status:** I asked Cursor to add only income with the same syntax as expense (income 2500 /salary August pay), and not list, delete, or save. I wanted one issue, one PR, and a User Guide that still says list is not a feature.
 
 - **Feature / increment:** `income 2500 /salary August pay` with the same argument shape as expense. No list, delete, persistence, or GUI.
 - **Prompts used:** Implement issue #2 only; same syntax as expense; do not add other features.
@@ -72,5 +72,23 @@ Next time. Put one invalid example in the prompt (expense 12.50 /food with no de
 - **Prompting vs hand work:** Copying expense into income is fast for the agent; choosing not to introduce `list` still has to be in the prompt.
 - **Engineering judgement:** Shared `parseEntry` / `parseAmount` instead of duplicating regex. Kept two model classes (`Expense`, `Income`) for a smaller diff; a later increment can unify them before `list`.
 - **Next time:** Decide up front whether income/expense should already be one `Transaction` type, so `list` does not have to merge two lists.
+
+### Increment 04 — List transactions
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+- **Feature / increment:** `list` shows expenses and incomes in the order they were added. No delete, persist, or GUI.
+- **Prompts used:** Implement issue #3 only.
+- **Assumptions the LLM made:**
+  - `Entry` interface + one `ExpenseBook` list so mixed add order is preserved (expense then income then expense).
+  - List lines look like `1. [expense] $12.50 /food lunch`.
+  - Empty book: `No transactions yet. Add an expense or income first.`
+  - Extra words after `list` are ignored (same as `help`).
+- **What to verify:** `./gradlew check`; add mixed entries then `list`; `list` on a fresh run shows the empty message; `help` includes `list`.
+- **How it was verified (agent):** unit tests + `./gradlew check`. Joseph should still run the app.
+- **Prompting vs hand work:** Numbered list formatting is easy for the agent. Choosing insertion-order vs “all expenses then all incomes” needed a design call (increment 03 already flagged this).
+- **Engineering judgement:** Did not implement `delete` even though numbers look like indexes. Did not replace `Expense`/`Income` with one class — only added `Entry`.
+- **Next time:** If delete is next, reuse these 1-based indexes in the UG so testers are not surprised.
+
 
 
