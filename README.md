@@ -4,7 +4,7 @@ Budgie is a personal budget tracker with a chat-style JavaFX interface. This is 
 
 ## Current version
 
-**v1.1** — v1.0 plus `find KEYWORD` (category, description, or amount). Not yet: `budget`, `summary`, dates, `edit`.
+**v1.2** — v1.1 plus `summary` (income, expenses, net, and totals by category). Not yet: `budget`, dates, `edit`.
 
 ## Quick start
 

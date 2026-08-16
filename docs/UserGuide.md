@@ -2,7 +2,7 @@
 
 Budgie is a desktop **personal budget tracker** with a **chat-style JavaFX window**. You type commands (for example `expense 12.50 /food lunch`) and Budgie replies in the conversation.
 
-This guide describes **v1.1** only. Commands that are not listed here are not in the product.
+This guide describes **v1.2** only. Commands that are not listed here are not in the product.
 
 If a term is unfamiliar, see the [Glossary](#glossary).
 
@@ -27,7 +27,7 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 
    Install guides: [Windows](https://se-education.org/guides/tutorials/javaInstallationWindows.html), [macOS](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-2. Download `budgie.jar` from GitHub Releases **if a v1.1 (or later) JAR is published**. Until then, run from source (`./gradlew run`) or build `./gradlew shadowJar`. The **v1.0** Release JAR does not include `find`.
+2. Download `budgie.jar` from GitHub Releases **if a v1.2 (or later) JAR is published**. Until then, run from source (`./gradlew run`) or build `./gradlew shadowJar`. The **v1.0** Release JAR does not include `find` or `summary`.
 
 3. Copy the JAR into an empty folder. That folder becomes Budgie’s home folder (`data/budgie.txt` is created next to the JAR when you add a transaction).
 
@@ -51,8 +51,9 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 
    - `help`
    - `expense 12.50 /food lunch`
-   - `find food`
    - `list`
+   - `summary`
+   - `find food`
    - `bye` (shows a goodbye message, then closes the window)
 
 ## Command summary
@@ -64,6 +65,7 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 | Add income | `income AMOUNT /CATEGORY DESCRIPTION` | `income 2500 /salary August pay` |
 | List transactions | `list` | `list` |
 | Find transactions | `find KEYWORD` | `find food` |
+| View a summary | `summary` | `summary` |
 | Delete a transaction | `delete INDEX` | `delete 1` |
 | Exit | `bye` | `bye` |
 
@@ -75,7 +77,7 @@ There is no `save` command. Add, income, and delete write `data/budgie.txt` imme
 - **Amount** must be a **positive** number with **at most 2 decimal places** (for example `12.50` or `2500`). `0`, `-1`, and `12.555` are rejected. Displayed money always shows two decimal places (for example `$2500.00`).
 - **Category** is one word after `/` (for example `/food`). There is no space between `/` and the category name.
 - **Description** is the rest of the line. It keeps your capitalisation (`August pay` stays `August pay`).
-- The **command word** is case-insensitive (`Help`, `EXPENSE`, `Bye` work). Extra words after `help` or `list` are ignored.
+- The **command word** is case-insensitive (`Help`, `EXPENSE`, `Bye` work). Extra words after `help`, `list`, or `summary` are ignored.
 - **Index** for `delete` is the **1-based** number shown by `list`. After a delete, later rows **renumber**. Indexes are not permanent IDs.
 - Empty input is ignored. Unknown commands (for example `budget 800`) are rejected; they are not features.
 
@@ -102,6 +104,7 @@ Here is what I can do for now:
   income   - add income (e.g. income 2500 /salary August pay)
   list     - show all expenses and incomes
   find     - find transactions by category, description, or amount (e.g. find food)
+  summary  - show totals and a breakdown by category
   delete   - delete a transaction by its list number (e.g. delete 1)
   bye      - exit Budgie
 ```
@@ -239,6 +242,35 @@ No matching transactions found.
 
 `find` with no keyword prints usage. `find` does not change saved data.
 
+### Viewing a summary: `summary`
+
+Shows total income, total expenses, **net** (income minus expenses), and those totals grouped by category. There is no monthly budget in this version, so `summary` does not show remaining budget.
+
+Format: `summary`
+
+Sample session (after the two adds in the `list` example):
+
+```
+summary
+```
+
+```
+Here is your summary:
+Income: $2500.00
+Expenses: $12.50
+Net: $2487.50
+
+Expenses by category:
+  /food: $12.50
+
+Income by category:
+  /salary: $2500.00
+```
+
+If nothing has been added yet (and nothing is in the save file), `summary` uses the same empty message as `list`. Several expenses in the same category are added together. If there are only expenses (or only incomes), the other category section is omitted. Net can be negative (`-$15.50`) when expenses are larger than income.
+
+`summary` does not change saved data.
+
 ### Deleting a transaction: `delete`
 
 Removes one transaction using the number shown by `list`. The delete is saved immediately.
@@ -357,21 +389,22 @@ If `data/budgie.txt` already exists from an earlier run, `list` may show extra r
 5. Type `income 2500 /salary August pay` — you should see `Added income: $2500.00 /salary August pay`.
 6. Type `income 2500 /salary` — you should see the usage message under [Adding income](#adding-income-income).
 7. Type `list` — you should see numbered `[expense]` and `[income]` lines matching [Listing transactions](#listing-transactions-list).
-8. Type `find food` — you should see the expense as number 1 under [Finding transactions](#finding-transactions-find).
-9. Type `find rent` — you should see `No matching transactions found.`
-10. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
-11. Type `list` — only the income should remain, now as number 1.
-12. Type `bye` — you should see the goodbye message, then the window should close.
-13. Run `./gradlew run` again. Type `list` — the income from step 5 should still be there as number 1.
-14. Type `budget 800` — you should see the unknown-command message under [Errors](#errors).
-15. Type `expense /food lunch` — you should see the missing-amount message under [Errors](#errors).
-16. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
-17. Type `delete 99` — you should see the unknown-index message under [Errors](#errors). The list must stay unchanged.
-18. Type `bye` — you should see the goodbye message, then the window should close.
+8. Type `summary` — you should see income, expenses, net, and category totals matching [Viewing a summary](#viewing-a-summary-summary).
+9. Type `find food` — you should see the expense as number 1 under [Finding transactions](#finding-transactions-find).
+10. Type `find rent` — you should see `No matching transactions found.`
+11. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
+12. Type `list` — only the income should remain, now as number 1.
+13. Type `bye` — you should see the goodbye message, then the window should close.
+14. Run `./gradlew run` again. Type `list` — the income from step 5 should still be there as number 1.
+15. Type `budget 800` — you should see the unknown-command message under [Errors](#errors).
+16. Type `expense /food lunch` — you should see the missing-amount message under [Errors](#errors).
+17. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
+18. Type `delete 99` — you should see the unknown-index message under [Errors](#errors). The list must stay unchanged.
+19. Type `bye` — you should see the goodbye message, then the window should close.
 
 If a step above does not match this guide, treat it as a product bug.
 
-You can repeat the same path from source with `./gradlew shadowJar` then `java -jar build/libs/budgie.jar`. The published **v1.0** GitHub Release JAR does not include `find`; rebuild the JAR from this source if you need a tester JAR with `find`.
+You can repeat the same path from source with `./gradlew shadowJar` then `java -jar build/libs/budgie.jar`. The published **v1.0** GitHub Release JAR does not include `find` or `summary`; rebuild the JAR from this source if you need a tester JAR with those commands.
 
 ## FAQ
 
@@ -386,6 +419,9 @@ You can repeat the same path from source with `./gradlew shadowJar` then `java -
 
 **Q: Why was `budget 800` rejected?**
 **A:** There is no `budget` command in this version. Only the commands in the [command summary](#command-summary) are supported.
+
+**Q: Does `summary` show how much budget I have left?**
+**A:** No. There is no monthly budget yet. `summary` shows total income, total expenses, **net** (income minus expenses), and totals by category.
 
 **Q: Can I `delete` using a number from `find`?**
 **A:** Yes. `find` prints the same numbers as `list`. `delete 1` still means the first row of the full list.
@@ -420,6 +456,8 @@ You can repeat the same path from source with `./gradlew shadowJar` then `java -
 | **Entry / transaction** | One recorded expense or income shown by `list`. |
 | **Find keyword** | Text after `find`. Matches category, description, or amount. |
 | **GUI** | The JavaFX chat window (`./gradlew run` or `java -jar budgie.jar`). |
+| **Net** | Income total minus expense total, as shown by `summary`. Can be negative. |
+| **Summary** | Totals of income and expenses, including a breakdown by category. |
 | **Index** | 1-based row number from the current `list`. Used by `delete`. |
 | **Data file** | `data/budgie.txt` next to the working directory; auto-saved after changes. |
 | **JAR** | Runnable `budgie.jar` from the GitHub Release. Still requires Java 17. |

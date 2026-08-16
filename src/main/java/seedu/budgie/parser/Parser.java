@@ -12,6 +12,7 @@ import seedu.budgie.command.ExitCommand;
 import seedu.budgie.command.FindCommand;
 import seedu.budgie.command.HelpCommand;
 import seedu.budgie.command.ListCommand;
+import seedu.budgie.command.SummaryCommand;
 import seedu.budgie.command.UnknownCommand;
 import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.Expense;
@@ -85,6 +86,8 @@ public class Parser {
                 return parseDelete(arguments);
             case "find":
                 return parseFind(arguments);
+            case "summary":
+                return new SummaryCommand();
             default:
                 return new UnknownCommand(trimmed);
         }

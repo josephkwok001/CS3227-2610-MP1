@@ -14,6 +14,7 @@ public class HelpCommand implements Command {
             + "  income   - add income (e.g. income 2500 /salary August pay)\n"
             + "  list     - show all expenses and incomes\n"
             + "  find     - find transactions by category, description, or amount (e.g. find food)\n"
+            + "  summary  - show totals and a breakdown by category\n"
             + "  delete   - delete a transaction by its list number (e.g. delete 1)\n"
             + "  bye      - exit Budgie";
 

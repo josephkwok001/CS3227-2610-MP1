@@ -201,7 +201,7 @@ I asked Cursor to expand the User Guide and Developer Guide using the same secti
 
 ### Increment 11 — Find transactions
 
-**Status:** draft — rewrite in first person the same day.
+**Status:** I asked Cursor to add only find KEYWORD, not budget, summary, dates, or edit. It searches category and description as case-insensitive substrings, and amount by numeric value so 12.5 matches $12.50 but find 1 does not hit $12.50. Results keep list numbers so delete still makes sense. The unknown-command example in the UG is now budget 800. I still need to type find food in the GUI myself. The published v1.0 JAR does not have this until I rebuild.
 
 **Suggested first-person text (edit then keep):**
 
@@ -214,6 +214,22 @@ I asked Cursor to add only `find KEYWORD`, not budget, summary, dates, or edit. 
 - **How it was verified (agent):** unit tests + intended `./gradlew check`.
 - **Engineering judgement:** Did not add budget/summary. Did not number find results 1..n independently of list.
 - **Next time:** Optional `summary` if find is clean.
+
+### Increment 12 — Summary
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+**Suggested first-person text (edit then keep):**
+
+I asked Cursor to add only `summary`, not budget, dates, or edit. Because there is still no `budget` command, it does not show remaining vs a monthly cap. It shows total income, total expenses, net (income minus expenses), and a breakdown by category. Same-category amounts are added together. Empty `summary` uses the same message as empty `list`. I still need to type `summary` in the GUI myself after a couple of adds. The published v1.0 JAR does not have this until I rebuild.
+
+- **Feature / increment:** `summary` only.
+- **Prompts used:** Implement the summary command now.
+- **Assumptions the LLM made:** No remaining-budget line without `budget`; net = income − expenses; LinkedHashMap first-seen category order; extra words after `summary` ignored like `list`.
+- **What to verify:** `./gradlew check`; `summary` after the UG’s two sample adds; empty `summary`; `budget 800` still unknown.
+- **How it was verified (agent):** unit tests + intended `./gradlew check`.
+- **Engineering judgement:** Did not invent a budget or remaining-cap. Did not skip to dates/`edit`.
+- **Next time:** Optional `budget` if summary is clean, or polish reflections.
 
 
 
