@@ -46,24 +46,31 @@ Next time. Put the app name, Java version, and “do not implement later command
 
 ### Increment 02 — Add expense (in memory)
 
+For this increment I asked Cursor to add only expense AMOUNT /CATEGORY DESCRIPTION in memory, and to update the User Guide, help text, tests, a log, and a reflection stub. I told it not to add income, list, delete, persistence, or GUI, and not to commit. The prompt was scoped that tightly so I would have a clear “what did the model assume?” story, and so the User Guide would not describe list before it exists.
+
+Assumptions the model made. I gave the example expense 12.50 /food lunch but not the money type or error policy. It chose BigDecimal with at most two decimal places and a strictly positive amount. It also chose a one-word category after /, and BudgieException for a bad expense instead of “I don’t understand”. It also changed Command.execute to take an ExpenseBook, and it stopped lowercasing the whole line (increment 01 did that) so descriptions keep capitalisation. Those were reasonable, but they were its design, not a spec I wrote.
+
+What it got wrong / what I had to watch. It did not try to implement the list feature, which is what I was worried about. I still had to confirm the User Guide tells testers that expenses are not listed and not saved. When I ran ./gradlew run, Gradle’s progress bar still mixed with the chatbot output, so typing was messy — that is the same CLI issue as increment 01, not a new expense bug.
+
+How I verified. The agent ran ./gradlew check (parser and add-expense tests, Checkstyle). I ran the app myself: a bad command (expense without a description) showed the usage message; expense with /food beef and rice printed Added expense: $6.80 /food beef and rice; help listed expense; another add also worked. I did not wait until bye to prove data is gone, but the UG says the book is session-only.
+
+Next time. Put one invalid example in the prompt (expense 12.50 /food with no description) so the UG, help, and tests cannot drift. After check is green, immediately try that invalid line myself — I did that this time, and I should keep doing it.
+
+### Increment 03 — Add income (in memory)
+
 **Status:** Agent draft (Joseph should rewrite this in first person).
 
-- **Feature / increment:** `expense 12.50 /food lunch` stored in an in-memory `ExpenseBook`. No income, list, delete, persistence, or GUI.
-- **Prompts used:** Scoped increment-02 prompt: exact command format; update UG + help; JUnit; `./gradlew check`; append log + reflection stub; do not overwrite increment-01; do not commit.
+- **Feature / increment:** `income 2500 /salary August pay` with the same argument shape as expense. No list, delete, persistence, or GUI.
+- **Prompts used:** Implement issue #2 only; same syntax as expense; do not add other features.
 - **Assumptions the LLM made:**
-  - Amount is `BigDecimal`, max 2 decimal places, must be strictly positive.
-  - Category is a single token after `/`.
-  - `Command.execute` should take `ExpenseBook` (small refactor of help/bye/unknown).
-  - Parser lowercases only the command word so descriptions keep capitalisation (increment-01 lowercased the whole line).
-  - Invalid expense format is `BudgieException`, not `UnknownCommand`.
-- **What to verify:**
-  - `./gradlew check`
-  - Manual `expense 12.50 /food lunch` and a bad command such as `expense 12.50 /food`
-  - Help text matches the User Guide
-  - Expenses disappear after `bye` (no persistence — UG states this)
-- **How it was verified (agent):** unit tests for parser/add; then `./gradlew check`. Joseph should still run the app.
-- **Prompting vs hand work:** Wiring `Expense` / `Parser` / `AddExpenseCommand` is faster with the agent. Deciding “no list yet” and “don’t persist” is a human scope constraint; the model would otherwise add `list`.
-- **Engineering judgement:** Keep `list`/`delete`/`income` out even though the book could support them. Usage error vs unknown command split. Money as `BigDecimal` rather than `double`.
-- **Next time:** State whether extra-decimal amounts (`12.555`) must be rejected or rounded.
+  - Reuse the expense argument parser (`AMOUNT /CATEGORY DESCRIPTION`) and the same amount rules (`BigDecimal`, positive, max 2 d.p.).
+  - Add a separate `Income` class rather than a shared `Transaction` type (avoids a large rename in this increment).
+  - Display `2500` as `$2500.00`.
+  - Invalid income uses `INCOME_USAGE`, not the expense usage string.
+- **What to verify:** `./gradlew check`; manual `income 2500 /salary August pay`; `income 2500 /salary` (missing description); `help` lists income; `list` is still unknown.
+- **How it was verified (agent):** unit tests + `./gradlew check`. Joseph should still run the app.
+- **Prompting vs hand work:** Copying expense into income is fast for the agent; choosing not to introduce `list` still has to be in the prompt.
+- **Engineering judgement:** Shared `parseEntry` / `parseAmount` instead of duplicating regex. Kept two model classes (`Expense`, `Income`) for a smaller diff; a later increment can unify them before `list`.
+- **Next time:** Decide up front whether income/expense should already be one `Transaction` type, so `list` does not have to merge two lists.
 
 

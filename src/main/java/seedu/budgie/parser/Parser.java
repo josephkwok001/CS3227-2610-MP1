@@ -5,12 +5,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import seedu.budgie.command.AddExpenseCommand;
+import seedu.budgie.command.AddIncomeCommand;
 import seedu.budgie.command.Command;
 import seedu.budgie.command.ExitCommand;
 import seedu.budgie.command.HelpCommand;
 import seedu.budgie.command.UnknownCommand;
 import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.Expense;
+import seedu.budgie.model.Income;
 
 /**
  * Converts raw user input into a {@link Command}.
@@ -19,8 +21,25 @@ public class Parser {
 
     public static final String EXPENSE_USAGE = "Expense must be: expense AMOUNT /CATEGORY DESCRIPTION\n"
             + "Example: expense 12.50 /food lunch";
+    public static final String INCOME_USAGE = "Income must be: income AMOUNT /CATEGORY DESCRIPTION\n"
+            + "Example: income 2500 /salary August pay";
 
-    private static final Pattern EXPENSE_ARGS = Pattern.compile("(?<amount>\\S+)\\s+/(?<category>\\S+)\\s+(?<desc>.+)");
+    private static final Pattern ENTRY_ARGS = Pattern.compile("(?<amount>\\S+)\\s+/(?<category>\\S+)\\s+(?<desc>.+)");
+
+    /**
+     * Parsed amount, category, and description from an expense or income command.
+     */
+    private static class ParsedEntry {
+        private final BigDecimal amount;
+        private final String category;
+        private final String description;
+
+        private ParsedEntry(BigDecimal amount, String category, String description) {
+            this.amount = amount;
+            this.category = category;
+            this.description = description;
+        }
+    }
 
     /**
      * Parses {@code input} into the corresponding command.
@@ -43,31 +62,36 @@ public class Parser {
                 return new HelpCommand();
             case "expense":
                 return parseExpense(arguments);
+            case "income":
+                return parseIncome(arguments);
             default:
                 return new UnknownCommand(trimmed);
         }
     }
 
-    /**
-     * Parses the arguments of an {@code expense} command.
-     *
-     * @param arguments text after the command word
-     * @return an add-expense command
-     * @throws BudgieException if the format or amount is invalid
-     */
     private AddExpenseCommand parseExpense(String arguments) throws BudgieException {
-        Matcher matcher = EXPENSE_ARGS.matcher(arguments.trim());
+        ParsedEntry entry = parseEntry(arguments, EXPENSE_USAGE);
+        return new AddExpenseCommand(new Expense(entry.amount, entry.category, entry.description));
+    }
+
+    private AddIncomeCommand parseIncome(String arguments) throws BudgieException {
+        ParsedEntry entry = parseEntry(arguments, INCOME_USAGE);
+        return new AddIncomeCommand(new Income(entry.amount, entry.category, entry.description));
+    }
+
+    private ParsedEntry parseEntry(String arguments, String usage) throws BudgieException {
+        Matcher matcher = ENTRY_ARGS.matcher(arguments.trim());
         if (!matcher.matches()) {
-            throw new BudgieException(EXPENSE_USAGE);
+            throw new BudgieException(usage);
         }
 
         BigDecimal amount = parseAmount(matcher.group("amount"));
         String category = matcher.group("category");
         String description = matcher.group("desc").trim();
         if (description.isEmpty()) {
-            throw new BudgieException(EXPENSE_USAGE);
+            throw new BudgieException(usage);
         }
-        return new AddExpenseCommand(new Expense(amount, category, description));
+        return new ParsedEntry(amount, category, description);
     }
 
     /**

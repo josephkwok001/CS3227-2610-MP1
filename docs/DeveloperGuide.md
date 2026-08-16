@@ -1,6 +1,6 @@
 # Budgie Developer Guide
 
-This developer guide describes **v0.2** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
+This developer guide describes **v0.3** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
 
 ## 1. Setting up
 
@@ -12,7 +12,7 @@ IDE: import the Gradle project. Do not commit IDE-specific files.
 
 ## 2. Design overview
 
-v0.2 uses a small command loop with an in-memory expense book:
+v0.3 uses a small command loop with an in-memory book of expenses and incomes:
 
 ```mermaid
 flowchart LR
@@ -25,26 +25,26 @@ flowchart LR
 
 - `Budgie` — application entry point and command loop
 - `Ui` — read input, print messages
-- `Parser` — map a line of text to a `Command`; throw `BudgieException` for bad `expense` arguments
+- `Parser` — map a line of text to a `Command`; throw `BudgieException` for bad `expense` or `income` arguments
 - `Command` — execute against `ExpenseBook` and report whether to exit
-- `Expense` / `ExpenseBook` — session-only model (not persisted)
+- `Expense` / `Income` / `ExpenseBook` — session-only model (not persisted)
 
-Command objects: `HelpCommand`, `ExitCommand`, `UnknownCommand`, `AddExpenseCommand`. Income, list, delete, and storage are not implemented yet.
+Command objects: `HelpCommand`, `ExitCommand`, `UnknownCommand`, `AddExpenseCommand`, `AddIncomeCommand`. List, delete, and storage are not implemented yet.
 
 ## 3. Current implementation notes
 
 - The command word is case-insensitive; expense descriptions keep the user's capitalisation.
 - Blank lines are skipped in `Budgie.run()`.
 - `Parser` uses an assertion that input is non-null (internal assumption).
-- Invalid `expense` format or amount is a `BudgieException` shown to the user.
+- Invalid `expense` or `income` format or amount is a `BudgieException` shown to the user.
 - Other unknown text still goes through `UnknownCommand`.
-- `ExpenseBook` is in memory only. Closing the app discards expenses.
+- `ExpenseBook` is in memory only. Closing the app discards expenses and incomes.
 
 ## 4. Testing
 
 - JUnit 5 tests live under `src/test/java`.
-- `ParserTest` covers `help`, `bye`, unknown input, a valid expense, and several invalid expense cases.
-- `AddExpenseCommandTest` checks that execute adds to `ExpenseBook`.
+- `ParserTest` covers `help`, `bye`, unknown input, valid/invalid `expense`, and valid/invalid `income`.
+- `AddExpenseCommandTest` and `AddIncomeCommandTest` check that execute adds to `ExpenseBook`.
 - `HelpCommandTest` checks the help text stays consistent with the User Guide.
 - Run the full gate with `./gradlew check`.
 - GUI tests are not applicable yet (CLI only).
