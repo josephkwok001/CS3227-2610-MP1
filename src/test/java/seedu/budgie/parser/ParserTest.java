@@ -18,6 +18,7 @@ import seedu.budgie.command.ExitCommand;
 import seedu.budgie.command.FindCommand;
 import seedu.budgie.command.HelpCommand;
 import seedu.budgie.command.ListCommand;
+import seedu.budgie.command.SummaryCommand;
 import seedu.budgie.command.UnknownCommand;
 import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.ExpenseBook;
@@ -200,6 +201,20 @@ public class ParserTest {
     public void parse_findTwoWords_keepsFullKeyword() throws BudgieException {
         Command command = parser.parse("find August pay");
         assertEquals("August pay", ((FindCommand) command).getKeyword());
+    }
+
+    @Test
+    public void parse_summary_returnsSummaryCommand() throws BudgieException {
+        Command command = parser.parse("summary");
+        assertInstanceOf(SummaryCommand.class, command);
+        assertFalse(command.isExit());
+        assertFalse(command.modifiesData());
+    }
+
+    @Test
+    public void parse_summaryDifferentCase_returnsSummaryCommand() throws BudgieException {
+        Command command = parser.parse("SUMMARY");
+        assertInstanceOf(SummaryCommand.class, command);
     }
 
     @Test

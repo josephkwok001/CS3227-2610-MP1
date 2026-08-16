@@ -1,6 +1,6 @@
 # Budgie Developer Guide
 
-This developer guide describes **v1.1** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
+This developer guide describes **v1.2** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
 
 ## Setting up
 
@@ -68,7 +68,7 @@ sequenceDiagram
   Window-->>User: Budgie chat bubble
 ```
 
-`expense` and `income` follow the same path, with `AddExpenseCommand` / `AddIncomeCommand` instead of `DeleteCommand`. `help`, `list`, and `find` skip `Storage.save` because `Command.modifiesData()` is false. `bye` returns `isExit == true`; the window shows the goodbye line, then closes after a short delay.
+`expense` and `income` follow the same path, with `AddExpenseCommand` / `AddIncomeCommand` instead of `DeleteCommand`. `help`, `list`, `find`, and `summary` skip `Storage.save` because `Command.modifiesData()` is false. `bye` returns `isExit == true`; the window shows the goodbye line, then closes after a short delay.
 
 ### UI component
 
@@ -104,6 +104,7 @@ Parsing rules that Logic owns (not the UI):
 - Missing amount: empty arguments, or a first token that starts with `/`.
 - Delete: a single integer `INDEX` ≥ 1; out-of-range indexes are thrown from Model, not from the parser (`delete 0` is usage, `delete 99` on a short list is unknown index).
 - Find: a non-empty `KEYWORD`; matches category or description as a case-insensitive substring, or amount by numeric value / `$12.50` form. Result rows keep original `list` numbers.
+- Summary: no arguments required (extra words are ignored, like `list`). Shows income total, expense total, net (income minus expenses), and category totals. There is no remaining-budget line because there is no `budget` command.
 
 ### Model component
 
@@ -144,9 +145,10 @@ Shared user-facing constants live in `seedu.budgie.Messages` (welcome text). `Bu
 ## Testing
 
 - JUnit 5 tests live under `src/test/java`.
-- `ParserTest` covers `help`, `bye`, `list`, `find`, `delete`, unknown input, missing amount, negative amount, and other valid/invalid `expense` / `income` cases.
+- `ParserTest` covers `help`, `bye`, `list`, `find`, `summary`, `delete`, unknown input, missing amount, negative amount, and other valid/invalid `expense` / `income` cases.
 - `ListCommandTest` checks empty-book output and mixed insertion order.
 - `FindCommandTest` checks category, description, and amount matches, original `list` indexes, and no-match output.
+- `SummaryCommandTest` checks empty-book output, mixed totals, merged category amounts, and income-only output.
 - `DeleteCommandTest` checks a valid delete, an out-of-range index message, and delete on an empty book.
 - `AddExpenseCommandTest` and `AddIncomeCommandTest` check that execute adds to `ExpenseBook`.
 - `HelpCommandTest` checks the help text stays consistent with the User Guide.
@@ -168,7 +170,7 @@ Work is increment-based: one user-visible feature (or one engineering increment 
 - [SE-EDU JavaFX tutorial](https://se-education.org/guides/tutorials/javaFx.html) (`Launcher` plus fat-JAR classifiers, same idea as AddressBook Level 3).
 - Checkstyle rules adapted from [AddressBook Level 3](https://github.com/se-edu/addressbook-level3).
 - Gradle / JUnit / Checkstyle / GitHub Actions tutorials at [se-education.org/guides](https://se-education.org/guides/).
-- User Guide / Developer Guide section layout follows the CS2103 tP style used in [EstateSearch](https://github.com/AY2526S1-CS2103T-W12-4/tp) (command summary, FAQ, glossary; architecture, requirements appendix, NFRs), adapted to Budgie’s actual v1.1 commands.
+- User Guide / Developer Guide section layout follows the CS2103 tP style used in [EstateSearch](https://github.com/AY2526S1-CS2103T-W12-4/tp) (command summary, FAQ, glossary; architecture, requirements appendix, NFRs), adapted to Budgie’s actual v1.2 commands.
 
 ## Appendix: Requirements
 
@@ -181,9 +183,9 @@ Work is increment-based: one user-visible feature (or one engineering increment 
 - Uses one computer (or copies a single text file between machines)
 - Reasonably comfortable with a desktop Java app
 
-**Value proposition:** Record expenses and incomes in a chat window, list or find them, delete mistakes by list number, and keep the data across restarts — without a spreadsheet or a server.
+**Value proposition:** Record expenses and incomes in a chat window, list, find, or summarise them, delete mistakes by list number, and keep the data across restarts — without a spreadsheet or a server.
 
-**v1.1 out of scope:** monthly budgets, category summaries, calendar dates, and `edit`. Those must not be documented as if they exist now.
+**v1.2 out of scope:** monthly budgets, remaining-balance versus a cap, calendar dates, and `edit`. Those must not be documented as if they exist now.
 
 ### User stories
 
@@ -195,6 +197,7 @@ Priorities: High (must have) — `* * *`, Medium (nice to have) — `* *`, Low �
 | `* * *` | student | add income the same way | record allowance or pay |
 | `* * *` | student | list all transactions in the order I added them | review my history |
 | `* * *` | student | find transactions by category, description, or amount | locate a row without scrolling the full list |
+| `* * *` | student | see income, expense, and category totals | know where money went without totalling by hand |
 | `* * *` | student | delete a transaction by its list number | remove a typo |
 | `* * *` | student | keep data after I close the app | continue tomorrow |
 | `* * *` | student | see clear errors for bad amounts or unknown indexes | fix the command without crashing |
@@ -302,7 +305,28 @@ Use case ends.
 
 ---
 
-**Use case UC06: Delete a transaction**
+**Use case UC06: View a summary**
+
+**Preconditions:** The app is running.
+
+**Guarantees:** Displayed totals match the current book. Data is unchanged.
+
+**MSS**
+
+1. User enters `summary`.
+2. System shows income total, expense total, net (income minus expenses), and category totals.
+
+Use case ends.
+
+**Extensions**
+
+- 2a. There are no transactions.
+  - 2a1. System shows `No transactions yet. Add an expense or income first.`
+  - Use case ends.
+
+---
+
+**Use case UC07: Delete a transaction**
 
 **Preconditions:** The app is running.
 
@@ -328,7 +352,7 @@ Use case ends.
 
 ---
 
-**Use case UC07: Exit**
+**Use case UC08: Exit**
 
 **Preconditions:** The app is running.
 
@@ -344,7 +368,7 @@ Use case ends.
 
 ---
 
-**Use case UC08: Reject unknown command**
+**Use case UC09: Reject unknown command**
 
 **MSS**
 
@@ -379,9 +403,9 @@ Use case ends. Data is unchanged.
 
 ## Appendix: Planned enhancements
 
-These are **not** in v1.1. Do not treat them as shipped.
+These are **not** in v1.2. Do not treat them as shipped.
 
-1. Monthly budget and remaining-balance `summary`.
+1. Monthly budget (`budget`) and remaining balance on `summary`.
 2. Optional dates and `edit INDEX`.
 3. Share amount-parsing between `Parser` and `Storage`; reduce duplication between `Expense` and `Income`.
 
