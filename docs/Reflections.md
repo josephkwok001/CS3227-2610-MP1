@@ -185,8 +185,7 @@ Packaging was bundled with the GUI increment because a GUI that testers cannot l
 
 ### Increment 10 — UG / DG rewrite
 
-**Status:** draft — rewrite in first person the same day.
-
+**Status:** I asked Cursor to add only summary, not budget, dates, or edit. Because there is still no budget command, it does not show remaining vs a monthly cap. It shows total income, total expenses, net (income minus expenses), and a breakdown by category. Same-category amounts are added together. Empty summary uses the same message as empty list. 
 **Suggested first-person text (edit then keep):**
 
 I asked Cursor to expand the User Guide and Developer Guide using the same section layout as my CS2103 tP (EstateSearch): command summary table, notes on amounts (two decimal places), FAQ, glossary; DG architecture as UI / Logic / Model / Storage, a sequence for delete, then a requirements appendix (scope, user stories, use cases) and NFRs. I did not ask it to add product features. I still need to skim the UG samples against the running JAR so the table does not drift from `help`.
