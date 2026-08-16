@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import seedu.budgie.command.AddExpenseCommand;
 import seedu.budgie.command.AddIncomeCommand;
 import seedu.budgie.command.Command;
+import seedu.budgie.command.DeleteCommand;
 import seedu.budgie.command.ExitCommand;
 import seedu.budgie.command.HelpCommand;
 import seedu.budgie.command.ListCommand;
@@ -137,5 +138,24 @@ public class ParserTest {
     public void parse_listDifferentCase_returnsListCommand() throws BudgieException {
         Command command = parser.parse("LIST");
         assertInstanceOf(ListCommand.class, command);
+    }
+
+    @Test
+    public void parse_validDelete_returnsDeleteCommand() throws BudgieException {
+        Command command = parser.parse("delete 1");
+        assertInstanceOf(DeleteCommand.class, command);
+        assertEquals(1, ((DeleteCommand) command).getOneBasedIndex());
+        assertFalse(command.isExit());
+    }
+
+    @Test
+    public void parse_deleteMissingIndex_throwsBudgieException() {
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("delete"));
+        assertEquals(Parser.DELETE_USAGE, thrown.getMessage());
+    }
+
+    @Test
+    public void parse_deleteZeroIndex_throwsBudgieException() {
+        assertThrows(BudgieException.class, () -> parser.parse("delete 0"));
     }
 }

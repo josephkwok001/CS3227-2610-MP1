@@ -2,7 +2,7 @@
 
 Budgie is a personal budget tracker with a chat-style interface.
 
-This guide describes **v0.4** only. Features that are not listed here are not in the current product.
+This guide describes **v0.5** only. Features that are not listed here are not in the current product.
 
 ## 1. Setup
 
@@ -68,6 +68,7 @@ Here is what I can do for now:
   expense  - add an expense (e.g. expense 12.50 /food lunch)
   income   - add income (e.g. income 2500 /salary August pay)
   list     - show all expenses and incomes
+  delete   - delete a transaction by its list number (e.g. delete 1)
   bye      - exit Budgie
 ```
 
@@ -174,9 +175,44 @@ If nothing has been added yet:
 No transactions yet. Add an expense or income first.
 ```
 
-`list` is case-insensitive. Transactions are still **not saved** to disk.
+`list` is case-insensitive. After you `delete` a row, later numbers shift down on the next `list`. Transactions are still **not saved** to disk.
 
-### 3.5 Exit: `bye`
+### 3.5 Delete a transaction: `delete`
+
+Removes one transaction using the number shown by `list`.
+
+Format:
+
+```
+delete INDEX
+```
+
+Sample session:
+
+```
+list
+delete 1
+list
+```
+
+If `list` first showed:
+
+```
+1. [expense] $12.50 /food lunch
+2. [income] $2500.00 /salary August pay
+```
+
+then `delete 1` prints:
+
+```
+Deleted: [expense] $12.50 /food lunch
+```
+
+and the remaining income becomes number 1.
+
+Invalid indexes (`delete`, `delete 0`, `delete 99` when the list is shorter) are rejected. Use `list` again if you are unsure of the number.
+
+### 3.6 Exit: `bye`
 
 Ends the session. Any expenses or incomes recorded in this run are discarded.
 
@@ -194,7 +230,7 @@ Bye. Keep those coins in the nest!
 
 `bye` is case-insensitive (`Bye` and `BYE` also work).
 
-### 3.6 Unrecognised input
+### 3.7 Unrecognised input
 
 Any other command is rejected with a short hint.
 
@@ -220,6 +256,8 @@ Type `help` to see what I can do.
 5. Type `income 2500 /salary August pay` — you should see `Added income: $2500.00 /salary August pay`.
 6. Type `income 2500 /salary` — you should see the usage message from section 3.3.
 7. Type `list` — you should see numbered `[expense]` and `[income]` lines matching section 3.4.
-8. Type `bye` — Budgie should print the goodbye message and exit.
+8. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
+9. Type `list` — only the income should remain, now as number 1.
+10. Type `bye` — Budgie should print the goodbye message and exit.
 
 If a step above does not match this guide, treat it as a product bug.

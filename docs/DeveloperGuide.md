@@ -1,6 +1,6 @@
 # Budgie Developer Guide
 
-This developer guide describes **v0.4** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
+This developer guide describes **v0.5** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
 
 ## 1. Setting up
 
@@ -12,7 +12,7 @@ IDE: import the Gradle project. Do not commit IDE-specific files.
 
 ## 2. Design overview
 
-v0.4 uses a small command loop with an in-memory book of expenses and incomes:
+v0.5 uses a small command loop with an in-memory book of expenses and incomes:
 
 ```mermaid
 flowchart LR
@@ -25,26 +25,27 @@ flowchart LR
 
 - `Budgie` — application entry point and command loop
 - `Ui` — read input, print messages
-- `Parser` — map a line of text to a `Command`; throw `BudgieException` for bad `expense` or `income` arguments
+- `Parser` — map a line of text to a `Command`; throw `BudgieException` for bad arguments
 - `Command` — execute against `ExpenseBook` and report whether to exit
-- `Expense` / `Income` implement `Entry`; `ExpenseBook` stores them in insertion order for `list`
+- `Expense` / `Income` implement `Entry`; `ExpenseBook` stores them in insertion order; `delete` uses 1-based `list` indexes
 
-Command objects: `HelpCommand`, `ExitCommand`, `UnknownCommand`, `AddExpenseCommand`, `AddIncomeCommand`, `ListCommand`. Delete and storage are not implemented yet.
+Command objects include `ListCommand` and `DeleteCommand`. Storage and GUI are not implemented yet.
 
 ## 3. Current implementation notes
 
 - The command word is case-insensitive; expense descriptions keep the user's capitalisation.
 - Blank lines are skipped in `Budgie.run()`.
 - `Parser` uses an assertion that input is non-null (internal assumption).
-- Invalid `expense` or `income` format or amount is a `BudgieException` shown to the user.
+- Invalid `expense` / `income` format, bad `delete` indexes, and missing delete index are `BudgieException`s shown to the user.
 - Other unknown text still goes through `UnknownCommand`.
 - `ExpenseBook` is in memory only. Closing the app discards expenses and incomes.
 
 ## 4. Testing
 
 - JUnit 5 tests live under `src/test/java`.
-- `ParserTest` covers `help`, `bye`, `list`, unknown input, valid/invalid `expense`, and valid/invalid `income`.
+- `ParserTest` covers `help`, `bye`, `list`, `delete`, unknown input, valid/invalid `expense`, and valid/invalid `income`.
 - `ListCommandTest` checks empty-book output and mixed insertion order.
+- `DeleteCommandTest` checks a valid delete and an out-of-range index.
 - `AddExpenseCommandTest` and `AddIncomeCommandTest` check that execute adds to `ExpenseBook`.
 - `HelpCommandTest` checks the help text stays consistent with the User Guide.
 - Run the full gate with `./gradlew check`.

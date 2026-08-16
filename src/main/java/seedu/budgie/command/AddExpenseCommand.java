@@ -1,5 +1,6 @@
 package seedu.budgie.command;
 
+import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.Expense;
 import seedu.budgie.model.ExpenseBook;
 
@@ -21,7 +22,7 @@ public class AddExpenseCommand implements Command {
     }
 
     @Override
-    public String execute(ExpenseBook expenseBook) {
+    public String execute(ExpenseBook expenseBook) throws BudgieException {
         expenseBook.add(expense);
         return "Added expense: " + expense.toDisplayString();
     }

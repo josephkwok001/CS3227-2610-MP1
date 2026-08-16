@@ -1,5 +1,6 @@
 package seedu.budgie.command;
 
+import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.Entry;
 import seedu.budgie.model.ExpenseBook;
 
@@ -11,7 +12,7 @@ public class ListCommand implements Command {
     public static final String EMPTY_MESSAGE = "No transactions yet. Add an expense or income first.";
 
     @Override
-    public String execute(ExpenseBook expenseBook) {
+    public String execute(ExpenseBook expenseBook) throws BudgieException {
         if (expenseBook.totalCount() == 0) {
             return EMPTY_MESSAGE;
         }

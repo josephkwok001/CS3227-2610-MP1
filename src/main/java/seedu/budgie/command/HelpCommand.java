@@ -1,5 +1,6 @@
 package seedu.budgie.command;
 
+import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.ExpenseBook;
 
 /**
@@ -12,10 +13,11 @@ public class HelpCommand implements Command {
             + "  expense  - add an expense (e.g. expense 12.50 /food lunch)\n"
             + "  income   - add income (e.g. income 2500 /salary August pay)\n"
             + "  list     - show all expenses and incomes\n"
+            + "  delete   - delete a transaction by its list number (e.g. delete 1)\n"
             + "  bye      - exit Budgie";
 
     @Override
-    public String execute(ExpenseBook expenseBook) {
+    public String execute(ExpenseBook expenseBook) throws BudgieException {
         return MESSAGE;
     }
 

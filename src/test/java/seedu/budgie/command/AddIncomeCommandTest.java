@@ -6,13 +6,14 @@ import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.ExpenseBook;
 import seedu.budgie.model.Income;
 
 public class AddIncomeCommandTest {
 
     @Test
-    public void execute_addsIncomeToBook() {
+    public void execute_addsIncomeToBook() throws BudgieException {
         Income income = new Income(new BigDecimal("2500"), "salary", "August pay");
         ExpenseBook book = new ExpenseBook();
         String message = new AddIncomeCommand(income).execute(book);

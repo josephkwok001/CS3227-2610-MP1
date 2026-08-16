@@ -75,7 +75,9 @@ Next time. Put one invalid example in the prompt (expense 12.50 /food with no de
 
 ### Increment 04 — List transactions
 
-**Status:** Agent draft (Joseph should rewrite this in first person).
+**Status:** I asked Cursor to add only list, not delete or save. It added an Entry interface and one insertion-order list, so mixed adds stay in the order I typed them. Lines look like "1. [expense] $12.50 /food lunch". Empty book: No transactions yet. Add an expense or income first.
+
+
 
 - **Feature / increment:** `list` shows expenses and incomes in the order they were added. No delete, persist, or GUI.
 - **Prompts used:** Implement issue #3 only.
@@ -89,6 +91,23 @@ Next time. Put one invalid example in the prompt (expense 12.50 /food with no de
 - **Prompting vs hand work:** Numbered list formatting is easy for the agent. Choosing insertion-order vs “all expenses then all incomes” needed a design call (increment 03 already flagged this).
 - **Engineering judgement:** Did not implement `delete` even though numbers look like indexes. Did not replace `Expense`/`Income` with one class — only added `Entry`.
 - **Next time:** If delete is next, reuse these 1-based indexes in the UG so testers are not surprised.
+
+### Increment 05 — Delete transaction
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+- **Feature / increment:** `delete INDEX` using the same 1-based numbers as `list`. Remaining rows renumber. No persist or GUI.
+- **Prompts used:** Implement delete only; not other commands.
+- **Assumptions the LLM made:**
+  - Index comes from `list` (start at 1).
+  - Success: `Deleted: [expense] $12.50 /food lunch`
+  - Bad format (`delete`, `delete 0`) uses `DELETE_USAGE`; index too large uses a different message and does not remove anything.
+  - `Command.execute` may throw `BudgieException` (out-of-range delete).
+- **What to verify:** `./gradlew check`; `list` then `delete 1` then `list` again; `delete 99` on a short list.
+- **How it was verified (agent):** unit tests + `./gradlew check`. Joseph should still run the app.
+- **Engineering judgement:** Did not add persist. Did not use 0-based indexes. After delete, later items shift (like Duke).
+- **Next time:** Persistence should save whatever is left after deletes, not a separate snapshot.
+
 
 
 
