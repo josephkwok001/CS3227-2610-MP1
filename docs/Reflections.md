@@ -171,7 +171,7 @@ For this increment I asked Cursor to finish remaining P0: a JavaFX chat UI with 
 
 ### Increment 09 — Fat JAR / release packaging
 
-**Status:** draft — rewrite in first person the same day.
+**Status:** For this increment I asked Cursor to finish remaining P0: a JavaFX chat UI with a Launcher class, plus a fat JAR. I kept the same commands; the GUI is another front end on Budgie.getResponse, not a second parser. The model copied the SE-EDU Launcher pattern so java -jar does not die with “JavaFX runtime components are missing.
 
 **Suggested first-person text (edit then keep):**
 
