@@ -8,11 +8,10 @@ import seedu.budgie.storage.Storage;
 import seedu.budgie.ui.Ui;
 
 /**
- * Entry point of the Budgie personal budget tracker.
+ * Logic for the Budgie personal budget tracker. The CLI and GUI both use this class.
  */
 public class Budgie {
 
-    private final Ui ui;
     private final Parser parser;
     private final Storage storage;
     private final ExpenseBook expenseBook;
@@ -22,7 +21,6 @@ public class Budgie {
      * Creates a Budgie application, loading any previously saved transactions.
      */
     public Budgie() {
-        this.ui = new Ui();
         this.parser = new Parser();
         this.storage = new Storage();
         Storage.LoadResult loaded = storage.load();
@@ -31,9 +29,50 @@ public class Budgie {
     }
 
     /**
-     * Runs the command loop until the user exits.
+     * Returns the greeting, plus a load warning when the save file had skipped lines.
+     *
+     * @return welcome text for CLI or GUI
+     */
+    public String getWelcomeMessage() {
+        if (loadWarning == null) {
+            return Messages.WELCOME;
+        }
+        return Messages.WELCOME + "\n\n" + loadWarning;
+    }
+
+    /**
+     * Parses and executes {@code input}, saving after commands that change data.
+     *
+     * @param input one command line
+     * @return message to show, and whether to exit
+     */
+    public CommandResult getResponse(String input) {
+        assert input != null : "input should not be null";
+        String trimmed = input.trim();
+        if (trimmed.isEmpty()) {
+            return new CommandResult("", false);
+        }
+        try {
+            Command command = parser.parse(trimmed);
+            String message = command.execute(expenseBook);
+            if (command.modifiesData()) {
+                try {
+                    storage.save(expenseBook);
+                } catch (BudgieException e) {
+                    message = message + "\n" + e.getMessage();
+                }
+            }
+            return new CommandResult(message, command.isExit());
+        } catch (BudgieException e) {
+            return new CommandResult(e.getMessage(), false);
+        }
+    }
+
+    /**
+     * Runs the command loop on standard input until the user exits.
      */
     public void run() {
+        Ui ui = new Ui();
         ui.showWelcome();
         if (loadWarning != null) {
             ui.showMessage(loadWarning);
@@ -44,25 +83,18 @@ public class Budgie {
             if (fullCommand.isEmpty()) {
                 continue;
             }
-            try {
-                Command command = parser.parse(fullCommand);
-                String message = command.execute(expenseBook);
-                if (command.modifiesData()) {
-                    try {
-                        storage.save(expenseBook);
-                    } catch (BudgieException e) {
-                        message = message + "\n" + e.getMessage();
-                    }
-                }
-                ui.showMessage(message);
-                isExit = command.isExit();
-            } catch (BudgieException e) {
-                ui.showMessage(e.getMessage());
-            }
+            CommandResult result = getResponse(fullCommand);
+            ui.showMessage(result.getMessage());
+            isExit = result.isExit();
         }
         ui.close();
     }
 
+    /**
+     * Starts the CLI. Use {@link Launcher} to start the GUI.
+     *
+     * @param args unused
+     */
     public static void main(String[] args) {
         new Budgie().run();
     }

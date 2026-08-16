@@ -41,6 +41,6 @@ Prefer small methods, custom exceptions for user/environment errors, assertions 
 5. Delete
 6. Persist
 7. Errors
-8. JavaFX GUI (current)
+8. JavaFX GUI
 9. Fat JAR release
-10. P1 only if P0 is clean: budget, summary, find, dates, edit
+10. P1 only if P0 is clean: budget, summary, find, dates, edit (next, optional)

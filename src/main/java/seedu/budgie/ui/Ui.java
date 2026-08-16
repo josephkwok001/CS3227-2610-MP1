@@ -2,6 +2,8 @@ package seedu.budgie.ui;
 
 import java.util.Scanner;
 
+import seedu.budgie.Messages;
+
 /**
  * Handles reading user input and printing messages to the console.
  */
@@ -31,8 +33,7 @@ public class Ui {
      * Shows the welcome banner and greeting.
      */
     public void showWelcome() {
-        showMessage(LOGO + "\nHello! I'm Budgie, your personal budget tracker.\n"
-                + "Type `help` to see what I can do.");
+        showMessage(LOGO + "\n" + Messages.WELCOME);
     }
 
     /**

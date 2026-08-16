@@ -1,10 +1,10 @@
 # CS3227 MP1 — Budgie
 
-Budgie is a personal budget tracker with a chat-style interface. This is an individual project for NUS CS3227 Agentic Software Engineering.
+Budgie is a personal budget tracker with a chat-style JavaFX interface. This is an individual project for NUS CS3227 Agentic Software Engineering.
 
 ## Current version
 
-**v0.7** — greet, `help`, `bye`, `expense`, `income`, `list`, `delete`, auto-save to `data/budgie.txt`, and distinct messages for unknown command, missing amount, negative amount, and unknown delete index. Not yet: GUI.
+**v1.0** — greet, `help`, `bye`, `expense`, `income`, `list`, `delete`, auto-save to `data/budgie.txt`, distinct error messages, JavaFX GUI, and a fat JAR. Optional P1 commands (`budget`, `summary`, `find`, dates, `edit`) are not in this version.
 
 ## Quick start
 
@@ -20,12 +20,14 @@ Run tests and Checkstyle:
 ./gradlew check
 ```
 
-Build a fat JAR (`build/libs/budgie-0.1.jar`):
+Build a fat JAR (`build/libs/budgie.jar`):
 
 ```bash
 ./gradlew shadowJar
-java -jar build/libs/budgie-0.1.jar
+java -jar build/libs/budgie.jar
 ```
+
+Text-only CLI: `./gradlew runCli`.
 
 ## Documentation
 
@@ -36,4 +38,4 @@ java -jar build/libs/budgie-0.1.jar
 
 ## Acknowledgements
 
-Project conventions and tooling follow the CS2103/T iP AI Guidance and [se-edu](https://se-education.org/) tutorials (Gradle, Checkstyle, Java coding standard).
+Project conventions and tooling follow the CS2103/T iP AI Guidance and [se-edu](https://se-education.org/) tutorials (Gradle, Checkstyle, Java coding standard, JavaFX).
