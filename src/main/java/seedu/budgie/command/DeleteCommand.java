@@ -31,6 +31,11 @@ public class DeleteCommand implements Command {
         return false;
     }
 
+    @Override
+    public boolean modifiesData() {
+        return true;
+    }
+
     public int getOneBasedIndex() {
         return oneBasedIndex;
     }

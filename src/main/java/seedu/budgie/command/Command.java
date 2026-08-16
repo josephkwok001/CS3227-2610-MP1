@@ -23,4 +23,13 @@ public interface Command {
      * @return {@code true} if the session should end
      */
     boolean isExit();
+
+    /**
+     * Returns whether this command changes stored transactions, so they should be saved.
+     *
+     * @return {@code true} if the expense book may have changed
+     */
+    default boolean modifiesData() {
+        return false;
+    }
 }

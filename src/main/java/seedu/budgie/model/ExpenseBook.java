@@ -7,7 +7,7 @@ import java.util.List;
 import seedu.budgie.exception.BudgieException;
 
 /**
- * In-memory store of expenses and incomes for the current session. Data is not saved to disk yet.
+ * In-memory store of expenses and incomes. Budgie saves this book after each add or delete.
  */
 public class ExpenseBook {
 

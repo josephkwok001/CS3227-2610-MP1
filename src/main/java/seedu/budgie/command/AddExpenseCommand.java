@@ -32,6 +32,11 @@ public class AddExpenseCommand implements Command {
         return false;
     }
 
+    @Override
+    public boolean modifiesData() {
+        return true;
+    }
+
     public Expense getExpense() {
         return expense;
     }

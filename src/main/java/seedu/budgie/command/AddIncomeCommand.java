@@ -32,6 +32,11 @@ public class AddIncomeCommand implements Command {
         return false;
     }
 
+    @Override
+    public boolean modifiesData() {
+        return true;
+    }
+
     public Income getIncome() {
         return income;
     }

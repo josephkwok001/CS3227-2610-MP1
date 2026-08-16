@@ -2,7 +2,7 @@
 
 Budgie is a personal budget tracker with a chat-style interface.
 
-This guide describes **v0.5** only. Features that are not listed here are not in the current product.
+This guide describes **v0.6** only. Features that are not listed here are not in the current product.
 
 ## 1. Setup
 
@@ -74,7 +74,7 @@ Here is what I can do for now:
 
 ### 3.2 Add an expense: `expense`
 
-Records an expense in memory for the current session.
+Records an expense. It is saved to `data/budgie.txt` as soon as it is added.
 
 Format:
 
@@ -99,8 +99,6 @@ Sample output:
 Added expense: $12.50 /food lunch
 ```
 
-Transactions are **not saved** to disk yet. They exist only until you type `bye`.
-
 Invalid formats print a usage message instead of recording an expense:
 
 ```
@@ -116,7 +114,7 @@ Zero, negative, or extra-decimal amounts (e.g. `0`, `-1`, `12.555`) are also rej
 
 ### 3.3 Add income: `income`
 
-Records income in memory for the current session. The format is the same as `expense`.
+Records income. The format is the same as `expense`. The income is saved immediately.
 
 Format:
 
@@ -175,7 +173,7 @@ If nothing has been added yet:
 No transactions yet. Add an expense or income first.
 ```
 
-`list` is case-insensitive. After you `delete` a row, later numbers shift down on the next `list`. Transactions are still **not saved** to disk.
+`list` is case-insensitive. After you `delete` a row, later numbers shift down on the next `list`. The list is loaded from `data/budgie.txt` when Budgie starts.
 
 ### 3.5 Delete a transaction: `delete`
 
@@ -212,9 +210,19 @@ and the remaining income becomes number 1.
 
 Invalid indexes (`delete`, `delete 0`, `delete 99` when the list is shorter) are rejected. Use `list` again if you are unsure of the number.
 
-### 3.6 Exit: `bye`
+Deletes are saved immediately. If you delete the last remaining transaction, the save file becomes empty, so a later restart still shows an empty list.
 
-Ends the session. Any expenses or incomes recorded in this run are discarded.
+### 3.6 Saved data
+
+Budgie writes `data/budgie.txt` in the folder you ran it from (the project root if you used `./gradlew run`). There is no `save` command.
+
+- A missing file is normal on the first run. Budgie starts with an empty list.
+- After `expense`, `income`, or `delete`, the file is updated before the next prompt.
+- If some lines in the file are invalid, Budgie skips them and prints a short warning, then loads the rest.
+
+### 3.7 Exit: `bye`
+
+Ends the session. Transactions already saved stay on disk for the next launch.
 
 Sample input:
 
@@ -230,7 +238,7 @@ Bye. Keep those coins in the nest!
 
 `bye` is case-insensitive (`Bye` and `BYE` also work).
 
-### 3.7 Unrecognised input
+### 3.8 Unrecognised input
 
 Any other command is rejected with a short hint.
 
@@ -249,6 +257,8 @@ Type `help` to see what I can do.
 
 ## 4. How to test (for peer testers)
 
+If `data/budgie.txt` already exists from an earlier run, `list` may show extra rows. Delete those rows first, or remove the file, before following the numbered steps.
+
 1. Run `./gradlew check` — tests and Checkstyle should pass.
 2. Run `./gradlew run`.
 3. Type `help` — the output should match section 3.1.
@@ -259,5 +269,7 @@ Type `help` to see what I can do.
 8. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
 9. Type `list` — only the income should remain, now as number 1.
 10. Type `bye` — Budgie should print the goodbye message and exit.
+11. Run `./gradlew run` again. Type `list` — the income from step 5 should still be there as number 1.
+12. Type `bye` to exit.
 
 If a step above does not match this guide, treat it as a product bug.
