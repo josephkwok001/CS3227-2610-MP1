@@ -1,66 +1,89 @@
 # Budgie User Guide
 
-Budgie is a personal budget tracker with a chat-style interface.
+Budgie is a desktop **personal budget tracker** with a **chat-style JavaFX window**. You type commands (for example `expense 12.50 /food lunch`) and Budgie replies in the conversation.
 
-This guide describes **v1.0** only. Features that are not listed here are not in the current product.
+This guide describes **v1.0** only. Commands that are not listed here are not in the product.
 
-## 1. Setup
+If a term is unfamiliar, see the [Glossary](#glossary).
 
-Requirements:
+## How to use this guide
 
-- **Java 17** or later (`java -version`)
+1. [Getting started](#getting-started) — install Java 17, download the JAR, open the window.
+2. [Command summary](#command-summary) — one-line formats and examples.
+3. [Notes about command format](#notes-about-command-format) — amounts, categories, indexes.
+4. [Features](#features) — full formats, sample input, and sample output.
+5. [How to test](#how-to-test-for-peer-testers) — numbered path for peer testers.
+6. [FAQ](#faq)
+7. [Known issues](#known-issues)
+8. [Glossary](#glossary)
 
-### Option A — run from source
+## Getting started
 
-In the project root. A chat window should open:
+1. Ensure you have **Java 17** or later (`java -version`).
 
-```bash
-./gradlew run
-```
+   **Windows:** Start Menu → Command Prompt or PowerShell → `java -version`.
 
-On Windows:
+   **macOS:** Terminal → `java -version`.
 
-```bat
-gradlew.bat run
-```
+   Install guides: [Windows](https://se-education.org/guides/tutorials/javaInstallationWindows.html), [macOS](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-The text-only CLI is still available as `./gradlew runCli` if you need it.
+2. Download `budgie.jar` from the [v1.0 GitHub Release](https://github.com/josephkwok001/CS3227-2610-MP1/releases/tag/v1.0).
 
-### Option B — run the JAR
+3. Copy the JAR into an empty folder. That folder becomes Budgie’s home folder (`data/budgie.txt` is created next to the JAR when you add a transaction).
 
-Build a fat JAR:
+4. Open a terminal, `cd` into that folder, and run:
 
-```bash
-./gradlew shadowJar
-java -jar build/libs/budgie.jar
-```
+   ```bash
+   java -jar budgie.jar
+   ```
 
-Peer testers can download `budgie.jar` from the GitHub Releases page instead of building. Copy it into an empty folder, then:
+   A window titled **Budgie** should open. Type in the text field at the bottom and press **Enter** or **Send**.
 
-```bash
-java -jar budgie.jar
-```
+   From source instead of the JAR:
 
-Saved data is written to `data/budgie.txt` in the folder you ran the JAR from.
+   ```bash
+   ./gradlew run
+   ```
 
-## 2. Starting Budgie
+   On Windows: `gradlew.bat run`. The text-only CLI is `./gradlew runCli` if you need it.
 
-When Budgie starts, a window titled **Budgie** should open. Type commands in the text field at the bottom and press **Enter** or **Send**.
+5. Try:
 
-The first reply is a greeting similar to:
+   - `help`
+   - `expense 12.50 /food lunch`
+   - `list`
+   - `bye` (shows a goodbye message, then closes the window)
 
-```
-Hello! I'm Budgie, your personal budget tracker.
-Type `help` to see what I can do.
-```
+## Command summary
 
-Empty input is ignored. `bye` shows the goodbye message and then closes the window.
+| Action | Format | Example |
+|---|---|---|
+| View help | `help` | `help` |
+| Add an expense | `expense AMOUNT /CATEGORY DESCRIPTION` | `expense 12.50 /food lunch` |
+| Add income | `income AMOUNT /CATEGORY DESCRIPTION` | `income 2500 /salary August pay` |
+| List transactions | `list` | `list` |
+| Delete a transaction | `delete INDEX` | `delete 1` |
+| Exit | `bye` | `bye` |
 
-## 3. Features
+There is no `save` command. Add, income, and delete write `data/budgie.txt` immediately.
 
-### 3.1 View available commands: `help`
+## Notes about command format
+
+- Words in `UPPER_CASE` are values you type. In `expense AMOUNT /CATEGORY DESCRIPTION`, an amount might be `12.50`.
+- **Amount** must be a **positive** number with **at most 2 decimal places** (for example `12.50` or `2500`). `0`, `-1`, and `12.555` are rejected. Displayed money always shows two decimal places (for example `$2500.00`).
+- **Category** is one word after `/` (for example `/food`). There is no space between `/` and the category name.
+- **Description** is the rest of the line. It keeps your capitalisation (`August pay` stays `August pay`).
+- The **command word** is case-insensitive (`Help`, `EXPENSE`, `Bye` work). Extra words after `help` or `list` are ignored.
+- **Index** for `delete` is the **1-based** number shown by `list`. After a delete, later rows **renumber**. Indexes are not permanent IDs.
+- Empty input is ignored. Unknown commands (for example `find food`) are rejected; they are not features.
+
+## Features
+
+### Viewing help: `help`
 
 Shows the commands supported in this version.
+
+Format: `help`
 
 Sample input:
 
@@ -80,20 +103,11 @@ Here is what I can do for now:
   bye      - exit Budgie
 ```
 
-### 3.2 Add an expense: `expense`
+### Adding an expense: `expense`
 
-Records an expense. It is saved to `data/budgie.txt` as soon as it is added.
+Records an expense and saves it immediately.
 
-Format:
-
-```
-expense AMOUNT /CATEGORY DESCRIPTION
-```
-
-- `AMOUNT` must be a positive number with at most 2 decimal places (e.g. `12.50`)
-- `CATEGORY` starts with `/` and is one word (e.g. `/food`)
-- `DESCRIPTION` is the rest of the line (e.g. `lunch`)
-- The command word is case-insensitive; the description keeps your capitalisation
+Format: `expense AMOUNT /CATEGORY DESCRIPTION`
 
 Sample input:
 
@@ -107,7 +121,7 @@ Sample output:
 Added expense: $12.50 /food lunch
 ```
 
-Invalid formats print a usage message instead of recording an expense:
+If the line is the wrong shape (for example missing a description):
 
 ```
 expense 12.50 /food
@@ -118,23 +132,19 @@ Expense must be: expense AMOUNT /CATEGORY DESCRIPTION
 Example: expense 12.50 /food lunch
 ```
 
-A missing amount (`expense` or `expense /food lunch`) and a negative amount (`expense -1 /food lunch`) have their own messages. See section 3.8.
+A missing amount (`expense` or `expense /food lunch`) and a negative amount (`expense -1 /food lunch`) have their own messages under [Errors](#errors).
 
-Zero or extra-decimal amounts (e.g. `0`, `12.555`) are rejected with:
+Zero or extra-decimal amounts (for example `0`, `12.555`) are rejected with:
 
 ```
 Amount must be a positive number with up to 2 decimal places.
 ```
 
-### 3.3 Add income: `income`
+### Adding income: `income`
 
-Records income. The format is the same as `expense`. The income is saved immediately.
+Records income. The argument shape is the same as `expense`. The income is saved immediately.
 
-Format:
-
-```
-income AMOUNT /CATEGORY DESCRIPTION
-```
+Format: `income AMOUNT /CATEGORY DESCRIPTION`
 
 Sample input:
 
@@ -148,7 +158,7 @@ Sample output:
 Added income: $2500.00 /salary August pay
 ```
 
-Invalid formats print a usage message:
+If the description is missing:
 
 ```
 income 2500 /salary
@@ -159,11 +169,11 @@ Income must be: income AMOUNT /CATEGORY DESCRIPTION
 Example: income 2500 /salary August pay
 ```
 
-Zero or extra-decimal amounts are rejected as with `expense`. Missing and negative amounts use the messages in section 3.8.
+Missing and negative amounts use the same rules as `expense`.
 
-### 3.4 List transactions: `list`
+### Listing transactions: `list`
 
-Shows all expenses and incomes in the order they were added. Numbering starts at 1.
+Shows expenses and incomes in the order they were added. Numbering starts at 1.
 
 Sample session:
 
@@ -181,31 +191,19 @@ Here are your transactions:
 2. [income] $2500.00 /salary August pay
 ```
 
-If nothing has been added yet:
+If nothing has been added yet (and nothing is in the save file):
 
 ```
 No transactions yet. Add an expense or income first.
 ```
 
-`list` is case-insensitive. After you `delete` a row, later numbers shift down on the next `list`. The list is loaded from `data/budgie.txt` when Budgie starts.
+The list is loaded from `data/budgie.txt` when Budgie starts.
 
-### 3.5 Delete a transaction: `delete`
+### Deleting a transaction: `delete`
 
-Removes one transaction using the number shown by `list`.
+Removes one transaction using the number shown by `list`. The delete is saved immediately.
 
-Format:
-
-```
-delete INDEX
-```
-
-Sample session:
-
-```
-list
-delete 1
-list
-```
+Format: `delete INDEX`
 
 If `list` first showed:
 
@@ -222,27 +220,27 @@ Deleted: [expense] $12.50 /food lunch
 
 and the remaining income becomes number 1.
 
-Invalid indexes (`delete`, `delete 0`) print the delete usage message. A number that is not on the list (`delete 99` when only one row exists) prints:
+`delete` or `delete 0` prints the delete usage message. A number that is not on the list (`delete 99` when only one row exists) prints:
 
 ```
 There is no transaction numbered 99. Use list to see valid indexes.
 ```
 
-Nothing is removed in that case. Use `list` again if you are unsure of the number.
+Nothing is removed in that case. If you delete the last remaining transaction, the save file becomes empty, so a later restart still shows an empty list.
 
-Deletes are saved immediately. If you delete the last remaining transaction, the save file becomes empty, so a later restart still shows an empty list.
+### Saved data
 
-### 3.6 Saved data
+Budgie writes `data/budgie.txt` in the folder you ran it from (the project root if you used `./gradlew run`, or the folder that contains the JAR if you used `java -jar`).
 
-Budgie writes `data/budgie.txt` in the folder you ran it from (the project root if you used `./gradlew run`). There is no `save` command.
-
-- A missing file is normal on the first run. Budgie starts with an empty list.
+- A missing file on the first run is normal. Budgie starts with an empty list.
 - After `expense`, `income`, or `delete`, the file is updated before the next prompt.
-- If some lines in the file are invalid, Budgie skips them and prints a short warning, then loads the rest.
+- If some lines in the file are invalid, Budgie skips them, shows a short warning, and loads the rest.
 
-### 3.7 Exit: `bye`
+Editing the file by hand is possible (one line per transaction: `E|12.50|food|lunch` or `I|2500.00|salary|August pay`). If a line is invalid, that line is skipped on the next launch.
 
-Ends the session. Transactions already saved stay on disk for the next launch.
+### Exiting: `bye`
+
+Ends the session. Data already saved stays on disk.
 
 Sample input:
 
@@ -256,9 +254,9 @@ Sample output:
 Bye. Keep those coins in the nest!
 ```
 
-`bye` is case-insensitive (`Bye` and `BYE` also work).
+In the GUI, the window then closes after a short pause. `Bye` and `BYE` also work.
 
-### 3.8 Errors
+### Errors
 
 Bad input does not crash Budgie. These four cases have distinct messages.
 
@@ -308,25 +306,74 @@ delete 99
 There is no transaction numbered 99. Use list to see valid indexes.
 ```
 
-## 4. How to test (for peer testers)
+## How to test (for peer testers)
 
 If `data/budgie.txt` already exists from an earlier run, `list` may show extra rows. Delete those rows first, or remove the file, before following the numbered steps.
 
 1. Run `./gradlew check` — tests and Checkstyle should pass.
 2. Run `./gradlew run` — a Budgie chat window should open.
-3. Type `help` in the text field and press Enter — the output should match section 3.1.
+3. Type `help` in the text field and press Enter — the output should match the sample under [Viewing help](#viewing-help-help).
 4. Type `expense 12.50 /food lunch` — you should see `Added expense: $12.50 /food lunch`.
 5. Type `income 2500 /salary August pay` — you should see `Added income: $2500.00 /salary August pay`.
-6. Type `income 2500 /salary` — you should see the usage message from section 3.3.
-7. Type `list` — you should see numbered `[expense]` and `[income]` lines matching section 3.4.
+6. Type `income 2500 /salary` — you should see the usage message under [Adding income](#adding-income-income).
+7. Type `list` — you should see numbered `[expense]` and `[income]` lines matching [Listing transactions](#listing-transactions-list).
 8. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
 9. Type `list` — only the income should remain, now as number 1.
-10. Type `bye` — Budgie should print the goodbye message and exit.
+10. Type `bye` — you should see the goodbye message, then the window should close.
 11. Run `./gradlew run` again. Type `list` — the income from step 5 should still be there as number 1.
-12. Type `find food` — you should see the unknown-command message from section 3.8.
-13. Type `expense /food lunch` — you should see the missing-amount message from section 3.8.
+12. Type `find food` — you should see the unknown-command message under [Errors](#errors).
+13. Type `expense /food lunch` — you should see the missing-amount message under [Errors](#errors).
 14. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
-15. Type `delete 99` — you should see the unknown-index message from section 3.8. The list must stay unchanged.
+15. Type `delete 99` — you should see the unknown-index message under [Errors](#errors). The list must stay unchanged.
 16. Type `bye` — you should see the goodbye message, then the window should close.
 
 If a step above does not match this guide, treat it as a product bug.
+
+You can repeat the same path with `java -jar budgie.jar` from an empty folder (download from the [v1.0 Release](https://github.com/josephkwok001/CS3227-2610-MP1/releases/tag/v1.0)).
+
+## FAQ
+
+**Q: How do I transfer my data to another computer?**
+**A:** Copy `data/budgie.txt` from the old home folder into a `data/` folder next to `budgie.jar` on the new computer. You still need Java 17 there.
+
+**Q: Do I need to save before I quit?**
+**A:** No. Successful `expense`, `income`, and `delete` commands already wrote the file. `bye` only closes the session.
+
+**Q: Does each transaction keep a fixed number?**
+**A:** No. `INDEX` is the current `list` position, starting at 1. After `delete`, later rows move up.
+
+**Q: Why was `find food` rejected?**
+**A:** v1.0 has no `find` command. Only the commands in the [command summary](#command-summary) are supported.
+
+**Q: Which operating systems does Budgie run on?**
+**A:** Windows, macOS, and Linux, as long as you use **Java 17** (or later) with the fat JAR.
+
+**Q: Do I need programming knowledge?**
+**A:** No. You only need to type the commands in this guide.
+
+**Q: What if I edit `data/budgie.txt` and make a mess?**
+**A:** Invalid lines are skipped on the next launch, and Budgie warns you. Valid lines still load. Back up the file before editing it.
+
+**Q: Amounts look like `$2500.00` even when I typed `2500`. Is that wrong?**
+**A:** No. Budgie always displays two decimal places. You may type `2500` or `2500.00`.
+
+## Known issues
+
+1. **`./gradlew run` mixes Gradle progress text with the old CLI.** Prefer `./gradlew run` for the GUI, or `java -jar budgie.jar`, when you demo the product. `./gradlew runCli` is the text-only loop and can look messy under Gradle.
+2. **The save file follows the working directory.** If you launch the JAR from two different folders, you get two different `data/budgie.txt` files.
+3. **There are no automated GUI tests.** Behaviour of the window is checked by following [How to test](#how-to-test-for-peer-testers).
+
+## Glossary
+
+| Term | Meaning |
+|---|---|
+| **Amount** | Money value for an expense or income. Must be positive, at most two decimal places. |
+| **Category** | One-word label after `/`, for example `/food` or `/salary`. |
+| **CLI** | Text-only interface (`./gradlew runCli`). |
+| **Command word** | First token of a line (`help`, `expense`, `list`, …). Case-insensitive. |
+| **Description** | Free text after category, for example `lunch` or `August pay`. |
+| **Entry / transaction** | One recorded expense or income shown by `list`. |
+| **GUI** | The JavaFX chat window (`./gradlew run` or `java -jar budgie.jar`). |
+| **Index** | 1-based row number from the current `list`. Used by `delete`. |
+| **Data file** | `data/budgie.txt` next to the working directory; auto-saved after changes. |
+| **JAR** | Runnable `budgie.jar` from the GitHub Release. Still requires Java 17. |

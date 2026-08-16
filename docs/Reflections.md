@@ -183,6 +183,22 @@ Packaging was bundled with the GUI increment because a GUI that testers cannot l
 - **Engineering judgement:** Followed AddressBook-style JavaFX classifiers instead of the OpenJFX Gradle plugin.
 - **Next time:** Optional P1 only if v1.0 peer tests are clean.
 
+### Increment 10 — UG / DG rewrite
+
+**Status:** draft — rewrite in first person the same day.
+
+**Suggested first-person text (edit then keep):**
+
+I asked Cursor to expand the User Guide and Developer Guide using the same section layout as my CS2103 tP (EstateSearch): command summary table, notes on amounts (two decimal places), FAQ, glossary; DG architecture as UI / Logic / Model / Storage, a sequence for delete, then a requirements appendix (scope, user stories, use cases) and NFRs. I did not ask it to add product features. I still need to skim the UG samples against the running JAR so the table does not drift from `help`.
+
+- **Feature / increment:** Docs only. v1.0 commands unchanged.
+- **Prompts used:** Apply the EstateSearch UG/DG structure to Budgie.
+- **Assumptions the LLM made:** Map AB3-style components onto `Budgie` / `ExpenseBook` / `Storage` / `MainWindow` rather than inventing `LogicManager`.
+- **What to verify:** Command summary matches the app; tester step for `bye` closes the GUI; DG does not document unimplemented P1.
+- **How it was verified (agent):** docs rewrite only.
+- **Engineering judgement:** Kept v1.0 scope. Planned enhancements listed as not shipped.
+- **Next time:** Code-quality refactor (shared Expense/Income) if there is spare time; otherwise polish reflections.
+
 
 
 
