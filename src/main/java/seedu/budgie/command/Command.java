@@ -1,5 +1,6 @@
 package seedu.budgie.command;
 
+import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.ExpenseBook;
 
 /**
@@ -12,8 +13,9 @@ public interface Command {
      *
      * @param expenseBook in-memory expenses for this session
      * @return user-facing result of the command
+     * @throws BudgieException if the command cannot be completed with the current data
      */
-    String execute(ExpenseBook expenseBook);
+    String execute(ExpenseBook expenseBook) throws BudgieException;
 
     /**
      * Returns whether executing this command should terminate the application.

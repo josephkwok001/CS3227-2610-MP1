@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import seedu.budgie.command.AddExpenseCommand;
 import seedu.budgie.command.AddIncomeCommand;
 import seedu.budgie.command.Command;
+import seedu.budgie.command.DeleteCommand;
 import seedu.budgie.command.ExitCommand;
 import seedu.budgie.command.HelpCommand;
 import seedu.budgie.command.ListCommand;
@@ -24,6 +25,9 @@ public class Parser {
             + "Example: expense 12.50 /food lunch";
     public static final String INCOME_USAGE = "Income must be: income AMOUNT /CATEGORY DESCRIPTION\n"
             + "Example: income 2500 /salary August pay";
+    public static final String DELETE_USAGE = "Delete must be: delete INDEX\n"
+            + "Example: delete 1\n"
+            + "INDEX is the number shown by list.";
 
     private static final Pattern ENTRY_ARGS = Pattern.compile("(?<amount>\\S+)\\s+/(?<category>\\S+)\\s+(?<desc>.+)");
 
@@ -67,6 +71,8 @@ public class Parser {
                 return parseIncome(arguments);
             case "list":
                 return new ListCommand();
+            case "delete":
+                return parseDelete(arguments);
             default:
                 return new UnknownCommand(trimmed);
         }
@@ -80,6 +86,23 @@ public class Parser {
     private AddIncomeCommand parseIncome(String arguments) throws BudgieException {
         ParsedEntry entry = parseEntry(arguments, INCOME_USAGE);
         return new AddIncomeCommand(new Income(entry.amount, entry.category, entry.description));
+    }
+
+    private DeleteCommand parseDelete(String arguments) throws BudgieException {
+        String trimmedArgs = arguments.trim();
+        if (trimmedArgs.isEmpty() || trimmedArgs.split("\\s+").length != 1) {
+            throw new BudgieException(DELETE_USAGE);
+        }
+        int index;
+        try {
+            index = Integer.parseInt(trimmedArgs);
+        } catch (NumberFormatException e) {
+            throw new BudgieException(DELETE_USAGE);
+        }
+        if (index < 1) {
+            throw new BudgieException(DELETE_USAGE);
+        }
+        return new DeleteCommand(index);
     }
 
     private ParsedEntry parseEntry(String arguments, String usage) throws BudgieException {

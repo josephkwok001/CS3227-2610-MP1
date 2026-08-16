@@ -1,5 +1,6 @@
 package seedu.budgie.command;
 
+import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.ExpenseBook;
 
 /**
@@ -19,7 +20,7 @@ public class UnknownCommand implements Command {
     }
 
     @Override
-    public String execute(ExpenseBook expenseBook) {
+    public String execute(ExpenseBook expenseBook) throws BudgieException {
         return "Sorry, I don't understand `" + input + "`.\n"
                 + "Type `help` to see what I can do.";
     }

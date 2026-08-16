@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import seedu.budgie.exception.BudgieException;
+
 /**
  * In-memory store of expenses and incomes for the current session. Data is not saved to disk yet.
  */
@@ -69,5 +71,28 @@ public class ExpenseBook {
      */
     public List<Entry> getEntries() {
         return Collections.unmodifiableList(entries);
+    }
+
+    /**
+     * Removes the entry shown as {@code oneBasedIndex} in {@code list}.
+     *
+     * @param oneBasedIndex index from {@code list}, starting at 1
+     * @return the removed entry
+     * @throws BudgieException if the index does not match a listed transaction
+     */
+    public Entry delete(int oneBasedIndex) throws BudgieException {
+        if (oneBasedIndex < 1 || oneBasedIndex > entries.size()) {
+            throw new BudgieException("There is no transaction numbered " + oneBasedIndex
+                    + ". Use list to see valid indexes.");
+        }
+        Entry removed = entries.remove(oneBasedIndex - 1);
+        if (removed instanceof Expense) {
+            expenseCount--;
+        } else if (removed instanceof Income) {
+            incomeCount--;
+        } else {
+            assert false : "unknown entry type";
+        }
+        return removed;
     }
 }

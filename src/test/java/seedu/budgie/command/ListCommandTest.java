@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.budgie.exception.BudgieException;
 import seedu.budgie.model.Expense;
 import seedu.budgie.model.ExpenseBook;
 import seedu.budgie.model.Income;
@@ -13,13 +14,13 @@ import seedu.budgie.model.Income;
 public class ListCommandTest {
 
     @Test
-    public void execute_emptyBook_showsEmptyMessage() {
+    public void execute_emptyBook_showsEmptyMessage() throws BudgieException {
         String message = new ListCommand().execute(new ExpenseBook());
         assertEquals(ListCommand.EMPTY_MESSAGE, message);
     }
 
     @Test
-    public void execute_mixedEntries_preservesInsertionOrder() {
+    public void execute_mixedEntries_preservesInsertionOrder() throws BudgieException {
         ExpenseBook book = new ExpenseBook();
         new AddExpenseCommand(new Expense(new BigDecimal("12.50"), "food", "lunch")).execute(book);
         new AddIncomeCommand(new Income(new BigDecimal("2500"), "salary", "August pay")).execute(book);
