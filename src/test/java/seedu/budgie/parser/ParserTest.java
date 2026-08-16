@@ -15,6 +15,7 @@ import seedu.budgie.command.AddIncomeCommand;
 import seedu.budgie.command.Command;
 import seedu.budgie.command.DeleteCommand;
 import seedu.budgie.command.ExitCommand;
+import seedu.budgie.command.FindCommand;
 import seedu.budgie.command.HelpCommand;
 import seedu.budgie.command.ListCommand;
 import seedu.budgie.command.UnknownCommand;
@@ -48,10 +49,10 @@ public class ParserTest {
 
     @Test
     public void parse_unknownInput_returnsUnknownCommand() throws BudgieException {
-        Command command = parser.parse("find food");
+        Command command = parser.parse("budget 800");
         assertInstanceOf(UnknownCommand.class, command);
         assertFalse(command.isExit());
-        assertEquals("Sorry, I don't understand `find food`.\n"
+        assertEquals("Sorry, I don't understand `budget 800`.\n"
                 + "Type `help` to see what I can do.", command.execute(new ExpenseBook()));
     }
 
@@ -185,5 +186,25 @@ public class ParserTest {
     @Test
     public void parse_deleteZeroIndex_throwsBudgieException() {
         assertThrows(BudgieException.class, () -> parser.parse("delete 0"));
+    }
+
+    @Test
+    public void parse_validFind_returnsFindCommand() throws BudgieException {
+        Command command = parser.parse("find food");
+        assertInstanceOf(FindCommand.class, command);
+        assertEquals("food", ((FindCommand) command).getKeyword());
+        assertFalse(command.isExit());
+    }
+
+    @Test
+    public void parse_findTwoWords_keepsFullKeyword() throws BudgieException {
+        Command command = parser.parse("find August pay");
+        assertEquals("August pay", ((FindCommand) command).getKeyword());
+    }
+
+    @Test
+    public void parse_findMissingKeyword_throwsBudgieException() {
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("find"));
+        assertEquals(Parser.FIND_USAGE, thrown.getMessage());
     }
 }

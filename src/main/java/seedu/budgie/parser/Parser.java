@@ -9,6 +9,7 @@ import seedu.budgie.command.AddIncomeCommand;
 import seedu.budgie.command.Command;
 import seedu.budgie.command.DeleteCommand;
 import seedu.budgie.command.ExitCommand;
+import seedu.budgie.command.FindCommand;
 import seedu.budgie.command.HelpCommand;
 import seedu.budgie.command.ListCommand;
 import seedu.budgie.command.UnknownCommand;
@@ -34,6 +35,9 @@ public class Parser {
     public static final String DELETE_USAGE = "Delete must be: delete INDEX\n"
             + "Example: delete 1\n"
             + "INDEX is the number shown by list.";
+    public static final String FIND_USAGE = "Find must be: find KEYWORD\n"
+            + "Example: find food\n"
+            + "KEYWORD matches category, description, or amount.";
 
     private static final Pattern ENTRY_ARGS = Pattern.compile("(?<amount>\\S+)\\s+/(?<category>\\S+)\\s+(?<desc>.+)");
 
@@ -79,6 +83,8 @@ public class Parser {
                 return new ListCommand();
             case "delete":
                 return parseDelete(arguments);
+            case "find":
+                return parseFind(arguments);
             default:
                 return new UnknownCommand(trimmed);
         }
@@ -109,6 +115,14 @@ public class Parser {
             throw new BudgieException(DELETE_USAGE);
         }
         return new DeleteCommand(index);
+    }
+
+    private FindCommand parseFind(String arguments) throws BudgieException {
+        String trimmedArgs = arguments.trim();
+        if (trimmedArgs.isEmpty()) {
+            throw new BudgieException(FIND_USAGE);
+        }
+        return new FindCommand(trimmedArgs);
     }
 
     private ParsedEntry parseEntry(String arguments, String usage, String missingAmountMessage)

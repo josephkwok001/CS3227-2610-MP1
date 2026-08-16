@@ -61,4 +61,9 @@ public class Expense implements Entry {
         return "E|" + amount.setScale(2, RoundingMode.HALF_UP).toPlainString()
                 + "|" + category + "|" + description;
     }
+
+    @Override
+    public boolean matchesKeyword(String keyword) {
+        return EntryMatcher.matches(amount, category, description, keyword);
+    }
 }

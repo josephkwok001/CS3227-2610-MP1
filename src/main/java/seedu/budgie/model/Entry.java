@@ -18,4 +18,12 @@ public interface Entry {
      * @return encoded entry
      */
     String toFileString();
+
+    /**
+     * Returns whether this entry matches {@code keyword} (category, description, or amount).
+     *
+     * @param keyword search text
+     * @return {@code true} if this entry should appear in {@code find} results
+     */
+    boolean matchesKeyword(String keyword);
 }
