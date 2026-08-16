@@ -44,3 +44,26 @@ Judgement that stayed with me. I accepted the Ui / Parser / Command split so lat
 
 Next time. Put the app name, Java version, and “do not implement later commands” in the first setup prompt. After the agent reports green tests, run the app myself immediately and try one negative input, not only help / bye. Prefer java -jar (or a quieter run task) for User Guide screenshots so Gradle progress does not look like part of the UI.
 
+### Increment 02 — Add expense (in memory)
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+- **Feature / increment:** `expense 12.50 /food lunch` stored in an in-memory `ExpenseBook`. No income, list, delete, persistence, or GUI.
+- **Prompts used:** Scoped increment-02 prompt: exact command format; update UG + help; JUnit; `./gradlew check`; append log + reflection stub; do not overwrite increment-01; do not commit.
+- **Assumptions the LLM made:**
+  - Amount is `BigDecimal`, max 2 decimal places, must be strictly positive.
+  - Category is a single token after `/`.
+  - `Command.execute` should take `ExpenseBook` (small refactor of help/bye/unknown).
+  - Parser lowercases only the command word so descriptions keep capitalisation (increment-01 lowercased the whole line).
+  - Invalid expense format is `BudgieException`, not `UnknownCommand`.
+- **What to verify:**
+  - `./gradlew check`
+  - Manual `expense 12.50 /food lunch` and a bad command such as `expense 12.50 /food`
+  - Help text matches the User Guide
+  - Expenses disappear after `bye` (no persistence — UG states this)
+- **How it was verified (agent):** unit tests for parser/add; then `./gradlew check`. Joseph should still run the app.
+- **Prompting vs hand work:** Wiring `Expense` / `Parser` / `AddExpenseCommand` is faster with the agent. Deciding “no list yet” and “don’t persist” is a human scope constraint; the model would otherwise add `list`.
+- **Engineering judgement:** Keep `list`/`delete`/`income` out even though the book could support them. Usage error vs unknown command split. Money as `BigDecimal` rather than `double`.
+- **Next time:** State whether extra-decimal amounts (`12.555`) must be rejected or rounded.
+
+

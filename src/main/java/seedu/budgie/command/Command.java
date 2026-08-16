@@ -1,5 +1,7 @@
 package seedu.budgie.command;
 
+import seedu.budgie.model.ExpenseBook;
+
 /**
  * Represents a user command that can be executed by Budgie.
  */
@@ -8,9 +10,10 @@ public interface Command {
     /**
      * Executes this command and returns the message to show the user.
      *
+     * @param expenseBook in-memory expenses for this session
      * @return user-facing result of the command
      */
-    String execute();
+    String execute(ExpenseBook expenseBook);
 
     /**
      * Returns whether executing this command should terminate the application.

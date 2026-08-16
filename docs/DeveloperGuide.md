@@ -1,6 +1,6 @@
 # Budgie Developer Guide
 
-This developer guide describes **v0.1** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
+This developer guide describes **v0.2** of Budgie, a personal budget tracker chatbot for CS3227 MP1.
 
 ## 1. Setting up
 
@@ -12,36 +12,40 @@ IDE: import the Gradle project. Do not commit IDE-specific files.
 
 ## 2. Design overview
 
-v0.1 uses a small command loop:
+v0.2 uses a small command loop with an in-memory expense book:
 
 ```mermaid
 flowchart LR
   user[User] --> ui[Ui]
   ui --> parser[Parser]
   parser --> command[Command]
+  command --> book[ExpenseBook]
   command --> ui
 ```
 
-| Component | Responsibility |
-| --- | --- |
-| `Budgie` | Application entry point and command loop |
-| `Ui` | Read input, print messages |
-| `Parser` | Map a line of text to a `Command` |
-| `Command` | Execute and report whether to exit |
+- `Budgie` — application entry point and command loop
+- `Ui` — read input, print messages
+- `Parser` — map a line of text to a `Command`; throw `BudgieException` for bad `expense` arguments
+- `Command` — execute against `ExpenseBook` and report whether to exit
+- `Expense` / `ExpenseBook` — session-only model (not persisted)
 
-Command objects currently include `HelpCommand`, `ExitCommand`, and `UnknownCommand`. Later increments will add expense/income commands and `Storage` without changing this loop.
+Command objects: `HelpCommand`, `ExitCommand`, `UnknownCommand`, `AddExpenseCommand`. Income, list, delete, and storage are not implemented yet.
 
 ## 3. Current implementation notes
 
-- Commands are case-insensitive.
+- The command word is case-insensitive; expense descriptions keep the user's capitalisation.
 - Blank lines are skipped in `Budgie.run()`.
-- `Parser` uses an assertion that input is non-null (internal assumption). User-facing errors currently go through `UnknownCommand` rather than exceptions.
+- `Parser` uses an assertion that input is non-null (internal assumption).
+- Invalid `expense` format or amount is a `BudgieException` shown to the user.
+- Other unknown text still goes through `UnknownCommand`.
+- `ExpenseBook` is in memory only. Closing the app discards expenses.
 
 ## 4. Testing
 
 - JUnit 5 tests live under `src/test/java`.
-- `ParserTest` covers `help`, `bye` (including case variations), and unknown input.
-- `HelpCommandTest` checks the help text stays consistent with the user-facing copy.
+- `ParserTest` covers `help`, `bye`, unknown input, a valid expense, and several invalid expense cases.
+- `AddExpenseCommandTest` checks that execute adds to `ExpenseBook`.
+- `HelpCommandTest` checks the help text stays consistent with the User Guide.
 - Run the full gate with `./gradlew check`.
 - GUI tests are not applicable yet (CLI only).
 

@@ -6,7 +6,7 @@ Read this file, then [docs/Reflections.md](docs/Reflections.md) and the latest f
 
 ## Hard rules
 
-- Implement **one increment at a time**. Do not sneak in later features (expense, income, list, GUI, persistence) unless the user asked for that increment.
+- Implement **one increment at a time**. Do not sneak in later features (income, list, GUI, persistence) unless the user asked for that increment.
 - **Do not create `Features.md`** or any second feature list in the repo. User-facing features live only in [docs/UserGuide.md](docs/UserGuide.md). The backlog lives outside the repo (Cursor plan).
 - Follow the [SE-EDU intermediate Java standard](https://se-education.org/guides/conventions/java/intermediate.html). Keep Checkstyle clean (`./gradlew check`).
 - Git commit subjects follow [SE-EDU git convention](https://se-education.org/guides/conventions/git.html) (`Add …`, `Fix …`, `Refactor …`). One logical change per commit.
@@ -34,8 +34,8 @@ Prefer small methods, custom exceptions for user/environment errors, assertions 
 
 ## Current increment order (do not skip ahead)
 
-1. Greet / help / bye (this increment)
-2. Add expense
+1. Greet / help / bye
+2. Add expense (current)
 3. Add income
 4. List
 5. Delete

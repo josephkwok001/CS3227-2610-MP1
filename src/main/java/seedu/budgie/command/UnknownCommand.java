@@ -1,5 +1,7 @@
 package seedu.budgie.command;
 
+import seedu.budgie.model.ExpenseBook;
+
 /**
  * Responds to input that is not a recognised command.
  */
@@ -17,7 +19,7 @@ public class UnknownCommand implements Command {
     }
 
     @Override
-    public String execute() {
+    public String execute(ExpenseBook expenseBook) {
         return "Sorry, I don't understand `" + input + "`.\n"
                 + "Type `help` to see what I can do.";
     }

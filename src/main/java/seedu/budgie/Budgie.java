@@ -1,6 +1,8 @@
 package seedu.budgie;
 
 import seedu.budgie.command.Command;
+import seedu.budgie.exception.BudgieException;
+import seedu.budgie.model.ExpenseBook;
 import seedu.budgie.parser.Parser;
 import seedu.budgie.ui.Ui;
 
@@ -11,13 +13,15 @@ public class Budgie {
 
     private final Ui ui;
     private final Parser parser;
+    private final ExpenseBook expenseBook;
 
     /**
-     * Creates a Budgie application with its UI and parser collaborators.
+     * Creates a Budgie application with its UI, parser, and in-memory expense book.
      */
     public Budgie() {
         this.ui = new Ui();
         this.parser = new Parser();
+        this.expenseBook = new ExpenseBook();
     }
 
     /**
@@ -31,9 +35,13 @@ public class Budgie {
             if (fullCommand.isEmpty()) {
                 continue;
             }
-            Command command = parser.parse(fullCommand);
-            ui.showMessage(command.execute());
-            isExit = command.isExit();
+            try {
+                Command command = parser.parse(fullCommand);
+                ui.showMessage(command.execute(expenseBook));
+                isExit = command.isExit();
+            } catch (BudgieException e) {
+                ui.showMessage(e.getMessage());
+            }
         }
         ui.close();
     }
