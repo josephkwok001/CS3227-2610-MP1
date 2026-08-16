@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * An expense recorded during the current session.
+ * An expense recorded by the user.
  */
 public class Expense implements Entry {
 
@@ -54,5 +54,11 @@ public class Expense implements Entry {
     @Override
     public String toListLine() {
         return "[expense] " + toDisplayString();
+    }
+
+    @Override
+    public String toFileString() {
+        return "E|" + amount.setScale(2, RoundingMode.HALF_UP).toPlainString()
+                + "|" + category + "|" + description;
     }
 }

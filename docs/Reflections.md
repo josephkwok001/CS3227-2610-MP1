@@ -94,7 +94,9 @@ Next time. Put one invalid example in the prompt (expense 12.50 /food with no de
 
 ### Increment 05 — Delete transaction
 
-**Status:** Agent draft (Joseph should rewrite this in first person).
+**Status:** I asked Cursor to add only delete, using the same numbers as list. Assumptions. delete 1 means the first row in list. Success looks like Deleted: [expense] $12.50 /food lunch. After that, remaining rows move up. delete / delete 0 show usage; a number that is too large shows a different message and does not remove anything.
+
+
 
 - **Feature / increment:** `delete INDEX` using the same 1-based numbers as `list`. Remaining rows renumber. No persist or GUI.
 - **Prompts used:** Implement delete only; not other commands.
@@ -107,6 +109,46 @@ Next time. Put one invalid example in the prompt (expense 12.50 /food with no de
 - **How it was verified (agent):** unit tests + `./gradlew check`. Joseph should still run the app.
 - **Engineering judgement:** Did not add persist. Did not use 0-based indexes. After delete, later items shift (like Duke).
 - **Next time:** Persistence should save whatever is left after deletes, not a separate snapshot.
+
+### Increment 06 — Persist to file
+
+**Status:** draft — rewrite in first person the same day.
+
+**Suggested first-person text (edit then keep):**
+
+For this increment I asked Cursor to add file persistence only — no GUI and no new commands. I wanted it to save the live list after each add or delete, including after a delete, so a restart would not bring deleted rows back. The model chose `data/budgie.txt` and a Duke-style line format (`E|amount|category|description`). That is a product choice I should own, not something the assignment stated. I still need to run the app myself: add, delete, `bye`, start again, and `list`. Unit tests are not the same as seeing `data/budgie.txt` in the project folder. Missing-file first run should just look empty.
+
+- **Feature / increment:** Auto-load/save `data/budgie.txt`. Save after `expense` / `income` / `delete`. Missing file starts empty. Invalid lines skipped. No GUI.
+- **Prompts used:** Implement the next feature only; include a small reflection draft.
+- **Assumptions the LLM made:**
+  - Path `data/budgie.txt` relative to the working directory.
+  - Line format `E|12.50|food|lunch` / `I|2500.00|salary|August pay`; last field may contain `|`.
+  - Save immediately after mutating commands, including writing an empty file after deleting everything.
+  - No `save` command; `help` text unchanged.
+- **What to verify:** `./gradlew check`; add → delete → `bye` → run again → `list` shows remaining rows only; first run without a file is empty.
+- **How it was verified (agent):** unit tests + `./gradlew check`. Joseph should still run the restart path.
+- **Engineering judgement:** Did not add GUI. Did not snapshot independently of deletes. Skipped corrupt lines instead of refusing to start.
+- **Next time:** Remaining increment is extra error handling, then JavaFX.
+
+### Increment 07 — Error messages
+
+**Status:** draft — rewrite in first person the same day.
+
+**Suggested first-person text (edit then keep):**
+
+For this increment I asked Cursor to finish the error-handling bullet on the same persist branch: unknown command, missing amount, negative money, and unknown delete index. Some of those already existed as generic usage strings. What I wanted was four messages a peer tester can check against the User Guide. The model treated missing amount as `expense` with no amount token or a line that starts with `/category`, and it split negative amounts away from zero / too-many-decimals. That split is a design call I should own. I still need to type the four cases in the running app myself. GUI was not part of this increment.
+
+- **Feature / increment:** Distinct messages for unknown command, missing amount, negative amount, unknown `delete` index. No new commands and no GUI.
+- **Prompts used:** Fix the errors bullet on the same branch.
+- **Assumptions the LLM made:**
+  - Missing amount: empty args, or first token starts with `/`.
+  - Negative: `Amount cannot be negative.`
+  - Unknown index stays `There is no transaction numbered N. Use list to see valid indexes.`
+  - Unknown command stays the `Sorry, I don't understand ...` text.
+- **What to verify:** `./gradlew check`; type `find food`, `expense /food lunch`, `expense -1 /food lunch`, `delete 99` and match the User Guide.
+- **How it was verified (agent):** unit tests + `./gradlew check`. Joseph should still type the four cases in the app.
+- **Engineering judgement:** Did not add GUI. Did not turn zero amounts into the negative message. Did not treat `delete 0` as unknown index (still usage).
+- **Next time:** JavaFX GUI.
 
 
 

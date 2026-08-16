@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * An income recorded during the current session.
+ * An income recorded by the user.
  */
 public class Income implements Entry {
 
@@ -54,5 +54,11 @@ public class Income implements Entry {
     @Override
     public String toListLine() {
         return "[income] " + toDisplayString();
+    }
+
+    @Override
+    public String toFileString() {
+        return "I|" + amount.setScale(2, RoundingMode.HALF_UP).toPlainString()
+                + "|" + category + "|" + description;
     }
 }

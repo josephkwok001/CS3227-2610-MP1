@@ -38,9 +38,9 @@ Prefer small methods, custom exceptions for user/environment errors, assertions 
 2. Add expense
 3. Add income
 4. List
-5. Delete (current)
+5. Delete
 6. Persist
-7. Errors (remaining edge cases)
-8. JavaFX GUI
+7. Errors
+8. JavaFX GUI (current)
 9. Fat JAR release
 10. P1 only if P0 is clean: budget, summary, find, dates, edit

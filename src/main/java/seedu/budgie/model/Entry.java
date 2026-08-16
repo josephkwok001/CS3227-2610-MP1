@@ -11,4 +11,11 @@ public interface Entry {
      * @return formatted list line
      */
     String toListLine();
+
+    /**
+     * Returns one line for the save file. Descriptions may contain {@code |}.
+     *
+     * @return encoded entry
+     */
+    String toFileString();
 }

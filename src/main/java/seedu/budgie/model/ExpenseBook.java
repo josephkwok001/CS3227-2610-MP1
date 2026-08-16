@@ -7,7 +7,7 @@ import java.util.List;
 import seedu.budgie.exception.BudgieException;
 
 /**
- * In-memory store of expenses and incomes for the current session. Data is not saved to disk yet.
+ * In-memory store of expenses and incomes. Budgie saves this book after each add or delete.
  */
 public class ExpenseBook {
 
@@ -74,6 +74,16 @@ public class ExpenseBook {
     }
 
     /**
+     * Returns the user-facing message when {@code delete} refers to an index that is not listed.
+     *
+     * @param oneBasedIndex index the user typed
+     * @return error message
+     */
+    public static String unknownIndexMessage(int oneBasedIndex) {
+        return "There is no transaction numbered " + oneBasedIndex + ". Use list to see valid indexes.";
+    }
+
+    /**
      * Removes the entry shown as {@code oneBasedIndex} in {@code list}.
      *
      * @param oneBasedIndex index from {@code list}, starting at 1
@@ -82,8 +92,7 @@ public class ExpenseBook {
      */
     public Entry delete(int oneBasedIndex) throws BudgieException {
         if (oneBasedIndex < 1 || oneBasedIndex > entries.size()) {
-            throw new BudgieException("There is no transaction numbered " + oneBasedIndex
-                    + ". Use list to see valid indexes.");
+            throw new BudgieException(unknownIndexMessage(oneBasedIndex));
         }
         Entry removed = entries.remove(oneBasedIndex - 1);
         if (removed instanceof Expense) {
