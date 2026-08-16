@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 
 import seedu.budgie.command.AddExpenseCommand;
+import seedu.budgie.command.AddIncomeCommand;
 import seedu.budgie.command.Command;
 import seedu.budgie.command.ExitCommand;
 import seedu.budgie.command.HelpCommand;
@@ -44,7 +45,7 @@ public class ParserTest {
 
     @Test
     public void parse_unknownInput_returnsUnknownCommand() throws BudgieException {
-        Command command = parser.parse("income 2500");
+        Command command = parser.parse("list");
         assertInstanceOf(UnknownCommand.class, command);
         assertFalse(command.isExit());
     }
@@ -92,5 +93,35 @@ public class ParserTest {
     @Test
     public void parse_expenseTooManyDecimals_throwsBudgieException() {
         assertThrows(BudgieException.class, () -> parser.parse("expense 12.555 /food lunch"));
+    }
+
+    @Test
+    public void parse_validIncome_returnsAddIncomeCommand() throws BudgieException {
+        Command command = parser.parse("income 2500 /salary August pay");
+        assertInstanceOf(AddIncomeCommand.class, command);
+        AddIncomeCommand addCommand = (AddIncomeCommand) command;
+        assertEquals(new BigDecimal("2500"), addCommand.getIncome().getAmount());
+        assertEquals("salary", addCommand.getIncome().getCategory());
+        assertEquals("August pay", addCommand.getIncome().getDescription());
+        assertFalse(command.isExit());
+    }
+
+    @Test
+    public void parse_incomeDifferentCase_returnsAddIncomeCommand() throws BudgieException {
+        Command command = parser.parse("Income 100 /gift Angbao");
+        assertInstanceOf(AddIncomeCommand.class, command);
+        AddIncomeCommand addCommand = (AddIncomeCommand) command;
+        assertEquals("Angbao", addCommand.getIncome().getDescription());
+    }
+
+    @Test
+    public void parse_incomeMissingDescription_throwsBudgieException() {
+        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("income 2500 /salary"));
+        assertEquals(Parser.INCOME_USAGE, thrown.getMessage());
+    }
+
+    @Test
+    public void parse_incomeZeroAmount_throwsBudgieException() {
+        assertThrows(BudgieException.class, () -> parser.parse("income 0 /salary August pay"));
     }
 }
