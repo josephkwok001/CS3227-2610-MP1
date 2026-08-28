@@ -1,7 +1,7 @@
 # Log 13 — Refactor money formatting (prompt pipeline experiment)
 
 **Date:** 28 Aug 2026
-**Thread intent:** Refactor only — shared `MoneyFormatter`. Three separate prompts: ToT → few-shot CoT plan → zero-shot implement.
+**Thread intent:** Refactor only — shared `MoneyFormatter`. Four prompts: ToT → few-shot CoT plan → zero-shot implement → review-only (8-step checklist).
 **Verification:** `./gradlew check` passed (52 tests, Checkstyle). Joseph should run manual find/summary smoke tests.
 
 ---
@@ -229,8 +229,76 @@ When done, report: files changed, test count, check result, and any manual check
 
 ## Checks
 
-- `./gradlew check` — passed (52 tests, Checkstyle green)
+- `./gradlew check` — passed (52 tests, Checkstyle green); re-confirmed on branch `code-Refactor` after review
+- **Message 4 review verdict:** PASS (minor process concerns — see below)
 - Manual `find 1` / `find 12.5` / negative `summary` net left for Joseph
+
+---
+
+## Message 4 — Review only (8-step AI code review, no edits)
+
+**Phase label:** Review-only / 8-step checklist  
+**Branch reviewed:** `code-Refactor` (commit `b1da8aa Refactor code` vs `master`)  
+**Outcome:** **PASS** — merge OK after Joseph’s manual smoke and first-person reflection rewrite.
+
+### Prompt (exact)
+
+```text
+Project: Budgie (CS3227 MP1). Java 17, Gradle, JUnit, Checkstyle. Package: seedu.budgie.
+Read AGENTS.md and docs/Reflections.md before answering.
+
+Hard rules for this task:
+- Refactor only: shared money formatting / reduce duplication. No new user-facing features.
+- Do NOT add budget, dates, edit, or any new commands.
+- Do NOT merge Expense and Income into one class unless the design phase explicitly chooses that and I approve it.
+- User-visible strings must stay identical (e.g. $12.50, $2500.00, -$15.50 for negative net in summary).
+- find amount matching must still work (12.5 matches $12.50; find 1 does NOT match $12.50).
+- ./gradlew check must pass (JUnit + Checkstyle).
+- Do not create Features.md. Do not commit.
+- Follow SE-EDU intermediate Java standard.
+
+Phase: REVIEW ONLY. Do not edit files. Do not suggest large rewrites.
+
+The refactor diff is in my working tree / branch add-refactor-money-formatting (or paste diff summary).
+
+Apply this 8-step AI code review checklist:
+
+1. Functional: would ./gradlew check pass? Any tests removed/skipped?
+2. Intent: does the diff match "shared money formatting only"?
+3. Quality: naming, method length, SE-EDU style, duplication actually reduced?
+4. Dependencies: any new Gradle dependencies or suspicious imports?
+5. AI pitfalls: hallucinated APIs, behaviour drift vs UG samples, find 1 vs $12.50, negative summary net
+6. What a human should still manually verify
+7. CI/automation gaps
+8. One suggestion to update AGENTS.md or workflow
+
+Output: PASS / CONCERNS / FAIL with bullet issues by severity. No code blocks unless quoting a specific bug.
+```
+
+### Agent response (summary)
+
+**Verdict: PASS** (minor concerns — not blockers).
+
+| Step | Result |
+|---|---|
+| 1. Functional | `./gradlew check` passes; 52 tests; no `@Disabled` / skipped tests; +3 `MoneyFormatterTest` |
+| 2. Intent | Only `MoneyFormatter`, `Expense`, `Income`, `EntryMatcher`, `SummaryCommand` + tests/docs/log; no Parser/Storage/UI/UG code changes |
+| 3. Quality | Duplication reduced; `final` utility class; `Expense`/`Income` still separate (increment 03) |
+| 4. Dependencies | No `build.gradle` changes; only `java.math` / `seedu.budgie.model` |
+| 5. AI pitfalls | `BigDecimal.compareTo` kept for `find 12.5`; `FindCommandTest` covers `find 1`; `SummaryCommandTest` covers `-$15.50`; no hallucinated APIs |
+| 6. Manual | `find 12.5`, `find 1`, negative `summary`, persist restart, `./gradlew shadowJar` before JAR demo |
+| 7. CI | GitHub Actions `./gradlew check` sufficient; no CodeQL/Dependabot (OK for MP1) |
+| 8. AGENTS.md | Suggest: rebuild `shadowJar` before `java -jar` manual tests; optional review-only pass before merge |
+
+**Issues by severity**
+
+- **High:** none
+- **Medium (process):** increment 13 reflection still agent draft; manual smoke not recorded yet
+- **Low:** DG “planned enhancements” may still mention Expense/Income formatting duplication; Parser/Storage `parseAmount` deferred by design
+
+**Note:** Branch on disk was `code-Refactor`, not `add-refactor-money-formatting` (prompt name vs actual branch).
+
+---
 
 ## Corrections Joseph should verify
 
@@ -238,3 +306,4 @@ When done, report: files changed, test count, check result, and any manual check
 - Rebuild JAR (`./gradlew shadowJar`) before `java -jar` demo if needed.
 - Parser/Storage `parseAmount` duplication still exists — deferred.
 - Did not add budget, dates, or edit.
+- After manual smoke, note pass/fail in this log or increment 13 reflection.
