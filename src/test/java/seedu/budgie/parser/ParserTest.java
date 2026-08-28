@@ -77,7 +77,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parse_expenseMissingAmount_throwsBudgieException() {
+    public void parse_expenseMissingAmount_throwsExpenseMissingAmount() {
         BudgieException empty = assertThrows(BudgieException.class, () -> parser.parse("expense"));
         assertEquals(Parser.EXPENSE_MISSING_AMOUNT, empty.getMessage());
         BudgieException skippedAmount = assertThrows(BudgieException.class, () -> parser.parse("expense /food lunch"));
@@ -96,21 +96,33 @@ public class ParserTest {
     }
 
     @Test
-    public void parse_expenseZeroAmount_throwsBudgieException() {
-        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("expense 0 /food lunch"));
-        assertEquals(Parser.AMOUNT_INVALID, thrown.getMessage());
+    public void parse_expense_invalidAmounts() {
+        BudgieException zero = assertThrows(BudgieException.class, () -> parser.parse("expense 0 /food lunch"));
+        assertEquals(Parser.AMOUNT_INVALID, zero.getMessage());
+
+        String tooManyDecimalsInput = "expense 12.555 /food lunch";
+        BudgieException tooManyDecimals = assertThrows(
+                BudgieException.class, () -> parser.parse(tooManyDecimalsInput));
+        assertEquals(Parser.AMOUNT_INVALID, tooManyDecimals.getMessage());
+
+        BudgieException negative = assertThrows(BudgieException.class, () -> parser.parse("expense -1 /food lunch"));
+        assertEquals(Parser.AMOUNT_NEGATIVE, negative.getMessage());
+        assertEquals("Amount cannot be negative.", Parser.AMOUNT_NEGATIVE);
     }
 
     @Test
-    public void parse_expenseNegativeAmount_throwsBudgieException() {
-        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("expense -1 /food lunch"));
-        assertEquals(Parser.AMOUNT_NEGATIVE, thrown.getMessage());
-    }
+    public void parse_income_invalidAmounts() {
+        BudgieException zero = assertThrows(BudgieException.class, () -> parser.parse("income 0 /salary August pay"));
+        assertEquals(Parser.AMOUNT_INVALID, zero.getMessage());
 
-    @Test
-    public void parse_expenseTooManyDecimals_throwsBudgieException() {
-        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("expense 12.555 /food lunch"));
-        assertEquals(Parser.AMOUNT_INVALID, thrown.getMessage());
+        String tooManyDecimalsInput = "income 12.555 /salary August pay";
+        BudgieException tooManyDecimals = assertThrows(
+                BudgieException.class, () -> parser.parse(tooManyDecimalsInput));
+        assertEquals(Parser.AMOUNT_INVALID, tooManyDecimals.getMessage());
+
+        String negativeInput = "income -5 /salary August pay";
+        BudgieException negative = assertThrows(BudgieException.class, () -> parser.parse(negativeInput));
+        assertEquals(Parser.AMOUNT_NEGATIVE, negative.getMessage());
     }
 
     @Test
@@ -133,7 +145,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parse_incomeMissingAmount_throwsBudgieException() {
+    public void parse_incomeMissingAmount_throwsIncomeMissingAmount() {
         BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("income /salary August pay"));
         assertEquals(Parser.INCOME_MISSING_AMOUNT, thrown.getMessage());
     }
@@ -142,19 +154,6 @@ public class ParserTest {
     public void parse_incomeMissingDescription_throwsBudgieException() {
         BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("income 2500 /salary"));
         assertEquals(Parser.INCOME_USAGE, thrown.getMessage());
-    }
-
-    @Test
-    public void parse_incomeZeroAmount_throwsBudgieException() {
-        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse("income 0 /salary August pay"));
-        assertEquals(Parser.AMOUNT_INVALID, thrown.getMessage());
-    }
-
-    @Test
-    public void parse_incomeNegativeAmount_throwsBudgieException() {
-        String input = "income -5 /salary August pay";
-        BudgieException thrown = assertThrows(BudgieException.class, () -> parser.parse(input));
-        assertEquals(Parser.AMOUNT_NEGATIVE, thrown.getMessage());
     }
 
     @Test
