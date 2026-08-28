@@ -264,4 +264,3 @@ After the refactor pipeline (log 13), I tried the lecture’s AI-assisted unit-t
 - **Next time:** One “test design only” prompt before code; optional `EntryMatcherTest` only if I keep model-layer tests separate from `FindCommandTest`.
 
 
-
