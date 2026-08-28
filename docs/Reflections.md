@@ -230,6 +230,21 @@ I asked Cursor to add only `summary`, not budget, dates, or edit. Because there 
 - **Engineering judgement:** Did not invent a budget or remaining-cap. Did not skip to dates/`edit`.
 - **Next time:** Optional `budget` if summary is clean, or polish reflections.
 
+### Increment 13 — Refactor money formatting (ToT pipeline)
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+**Suggested first-person text (edit then keep):**
+
+I ran a three-stage prompt pipeline on a pure refactor: ToT for design (chose `MoneyFormatter` in `model`), few-shot CoT for a numbered plan, then zero-shot implement from that plan only. It centralised `12.50` / `$12.50` / `-$15.50` formatting without merging `Expense` and `Income`. `./gradlew check` stayed green and I did not change the User Guide because outputs should be identical. I still need to manually try `find 1`, `find 12.5`, and a negative `summary` net in the GUI or JAR.
+
+- **Feature / increment:** Refactor only — `MoneyFormatter`; no new commands.
+- **Prompts used:** ToT design → few-shot plan → plan-conditioned implement (Chat 3).
+- **Assumptions the LLM made:** Three methods (`formatPlain`, `formatDisplay`, `formatSignedDisplay`); `EntryMatcher` keeps `BigDecimal.compareTo` for amount keywords; Parser/Storage deferred.
+- **What to verify:** `./gradlew check`; `find 12.5` / `find 1`; `summary` with expenses > income shows `-$x.xx`; storage round-trip unchanged.
+- **How it was verified (agent):** 52 tests + Checkstyle green; existing command tests unchanged.
+- **Engineering judgement:** Did not merge Expense/Income; did not bundle Parser `parseAmount` sharing.
+- **Next time:** Optional `budget` or Parser/Storage amount parsing refactor; expand reflection deep dive on this pipeline.
 
 
 

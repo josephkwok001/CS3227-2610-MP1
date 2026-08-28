@@ -1,7 +1,6 @@
 package seedu.budgie.model;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * An expense recorded by the user.
@@ -47,8 +46,7 @@ public class Expense implements Entry {
      * @return formatted expense, e.g. {@code $12.50 /food lunch}
      */
     public String toDisplayString() {
-        String formattedAmount = amount.setScale(2, RoundingMode.HALF_UP).toPlainString();
-        return "$" + formattedAmount + " /" + category + " " + description;
+        return MoneyFormatter.formatDisplay(amount) + " /" + category + " " + description;
     }
 
     @Override
@@ -58,8 +56,7 @@ public class Expense implements Entry {
 
     @Override
     public String toFileString() {
-        return "E|" + amount.setScale(2, RoundingMode.HALF_UP).toPlainString()
-                + "|" + category + "|" + description;
+        return "E|" + MoneyFormatter.formatPlain(amount) + "|" + category + "|" + description;
     }
 
     @Override

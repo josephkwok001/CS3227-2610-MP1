@@ -1,7 +1,6 @@
 package seedu.budgie.model;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * Shared matching rules for {@code find KEYWORD}.
@@ -30,9 +29,9 @@ public final class EntryMatcher {
         if (category.toLowerCase().contains(needle) || description.toLowerCase().contains(needle)) {
             return true;
         }
-        String plain = amount.setScale(2, RoundingMode.HALF_UP).toPlainString();
+        String plain = MoneyFormatter.formatPlain(amount);
         String trimmedKeyword = keyword.trim();
-        if (plain.equals(needle) || ("$" + plain).equalsIgnoreCase(trimmedKeyword)) {
+        if (plain.equals(needle) || MoneyFormatter.formatDisplay(amount).equalsIgnoreCase(trimmedKeyword)) {
             return true;
         }
         try {
