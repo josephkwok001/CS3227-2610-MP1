@@ -1,7 +1,6 @@
 package seedu.budgie.command;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import seedu.budgie.model.Entry;
 import seedu.budgie.model.Expense;
 import seedu.budgie.model.ExpenseBook;
 import seedu.budgie.model.Income;
+import seedu.budgie.model.MoneyFormatter;
 
 /**
  * Shows income and expense totals, net (income minus expenses), and a breakdown by category.
@@ -43,9 +43,9 @@ public class SummaryCommand implements Command {
 
         BigDecimal net = incomeTotal.subtract(expenseTotal);
         StringBuilder result = new StringBuilder("Here is your summary:");
-        result.append('\n').append("Income: ").append(formatMoney(incomeTotal));
-        result.append('\n').append("Expenses: ").append(formatMoney(expenseTotal));
-        result.append('\n').append("Net: ").append(formatMoney(net));
+        result.append('\n').append("Income: ").append(MoneyFormatter.formatSignedDisplay(incomeTotal));
+        result.append('\n').append("Expenses: ").append(MoneyFormatter.formatSignedDisplay(expenseTotal));
+        result.append('\n').append("Net: ").append(MoneyFormatter.formatSignedDisplay(net));
         appendCategorySection(result, "Expenses by category:", expenseByCategory);
         appendCategorySection(result, "Income by category:", incomeByCategory);
         return result.toString();
@@ -67,18 +67,8 @@ public class SummaryCommand implements Command {
         }
         result.append("\n\n").append(heading);
         for (Map.Entry<String, BigDecimal> line : byCategory.entrySet()) {
-            result.append('\n').append("  /").append(line.getKey()).append(": ").append(formatMoney(line.getValue()));
+            result.append('\n').append("  /").append(line.getKey()).append(": ")
+                    .append(MoneyFormatter.formatSignedDisplay(line.getValue()));
         }
-    }
-
-    /**
-     * Formats {@code amount} with a dollar sign and two decimal places. Negative values use {@code -$x.xx}.
-     */
-    private static String formatMoney(BigDecimal amount) {
-        String absolute = amount.abs().setScale(2, RoundingMode.HALF_UP).toPlainString();
-        if (amount.signum() < 0) {
-            return "-$" + absolute;
-        }
-        return "$" + absolute;
     }
 }
