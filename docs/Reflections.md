@@ -246,5 +246,22 @@ I ran a three-stage prompt pipeline on a pure refactor: ToT for design (chose `M
 - **Engineering judgement:** Did not merge Expense/Income; did not bundle Parser `parseAmount` sharing.
 - **Next time:** Optional `budget` or Parser/Storage amount parsing refactor; expand reflection deep dive on this pipeline.
 
+### Increment 14 — AI-assisted unit tests
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+**Suggested first-person text (edit then keep):**
+
+After the refactor pipeline (log 13), I tried the lecture’s AI-assisted unit-testing style: a shared rules block, then four focused prompts — `EntryMatcher`, expanded `MoneyFormatterTest`, `ExpenseBook.delete`, and consolidated `Parser` amount validation. I asked for scenario tables, UG-linked cases, and “tests only, no production code.” The model produced sensible tests quickly and even found a gap (income `12.555` was not covered before). It also duplicated some scenarios already in `FindCommandTest` / `DeleteCommandTest`, and the Parser consolidation failed Checkstyle on the first run (method names, line length, `SeparatorWrap`) until it refactored `assertThrows` lines. I still need to decide whether to keep overlapping model tests or trim them. The prompts are in `logs/14-ai-unit-tests.md`.
+
+- **Feature / increment:** Unit tests only — no new commands.
+- **Prompts used:** Shared test block + four lecture-style prompts (EntryMatcher, MoneyFormatter, ExpenseBook, Parser amount validation). See `logs/14-ai-unit-tests.md`.
+- **How I prompted:** Explicit scope (“unit only”, no Parser in EntryMatcher tests); scenario template tables; link to UG (`find 1`, Errors section); “consolidate, remove duplication”; “explain test design table”.
+- **LLM response — what worked:** Fast coverage of UG edge cases; new `EntryMatcherTest` / `ExpenseBookTest`; income too-many-decimals gap filled; Parser tests merged into two methods.
+- **LLM response — what to watch:** Overlap with existing command tests; first Parser edit broke Checkstyle; minor duplicate assertions in `MoneyFormatterTest`; did not run integration/Budgie tests (out of scope).
+- **How it was verified (agent):** `./gradlew check` green after Checkstyle fixes.
+- **Engineering judgement:** I should review and delete weak/duplicate tests myself — the lecture says review and consolidate, not accept every generated `@Test`.
+- **Next time:** One “test design only” prompt before code; optional `EntryMatcherTest` only if I keep model-layer tests separate from `FindCommandTest`.
+
 
 
