@@ -38,6 +38,12 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    def testRunDir = layout.buildDirectory.dir('test-run').get().asFile
+    workingDir = testRunDir
+    doFirst {
+        testRunDir.mkdirs()
+        new File(testRunDir, 'data').mkdirs()
+    }
 
     testLogging {
         events 'passed', 'skipped', 'failed'

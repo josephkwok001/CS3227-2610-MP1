@@ -263,5 +263,22 @@ After the refactor pipeline (log 13), I tried the lecture’s AI-assisted unit-t
 - **Engineering judgement:** I should review and delete weak/duplicate tests myself — the lecture says review and consolidate, not accept every generated `@Test`.
 - **Next time:** One “test design only” prompt before code; optional `EntryMatcherTest` only if I keep model-layer tests separate from `FindCommandTest`.
 
+### Increment 15 — Budgie integration tests (ToT → approach A)
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+**Suggested first-person text (edit then keep):**
+
+Before writing `BudgieTest`, I used a Tree of Thoughts style prompt: compare approach A (`@TempDir` + change `user.dir` so `new Budgie()` hits real `data/budgie.txt`) vs approach B (inject `Storage` via a test-only constructor). The model’s table made the trade-off clear — A needs no production change but `user.dir` is JVM-global; B is cleaner but needs my approval to touch `Budgie.java`. I approved A only. During implementation, `System.setProperty("user.dir", tempDir)` did not repoint `Path.of("data/budgie.txt")` on Java 17 (default directory is fixed at JVM start), so the agent switched to Gradle `test.workingDir = build/test-run` plus `@BeforeEach` delete of the save file — still no production edits. Six integration tests cover `getResponse`: add→list, delete persisted across a new `Budgie()`, summary net line, `budget 800` unknown with no file, expense writes save file, and help/find/summary leave the file unchanged. I still need to run `./gradlew check` myself and skim `logs/15-budgie-integration-tests.md`.
+
+- **Feature / increment:** Integration tests only — `BudgieTest`; Gradle test `workingDir` tweak; no new commands.
+- **Prompts used:** Plan-only ToT (A vs B) → Joseph approved A → implement. See `logs/15-budgie-integration-tests.md`.
+- **How I prompted (ToT):** Asked for two approaches with pros/cons before any code; constrained to real `Budgie()` default path; listed exact scenarios (add/list, delete reload, summary, budget unknown, `modifiesData` save gate).
+- **Assumptions the LLM made:** `user.dir` would redirect relative paths (wrong on Java 17); message strings match existing unit tests.
+- **What went wrong:** Approach A’s `user.dir` hack failed — tests read Joseph’s real `data/budgie.txt` until Gradle `workingDir` fix.
+- **What to verify:** `./gradlew check`; all six `BudgieTest` methods pass; manual `budget 800` still unknown.
+- **How it was verified (agent):** `./gradlew check` after Gradle + test cleanup fix.
+- **Engineering judgement:** Stayed on A (no `Budgie(Storage)`); accepted overlap with storage integration tests because `BudgieTest` owns parser + `modifiesData` + reload-on-construct.
+- **Next time:** For default-path integration tests on Java 17, plan Gradle `workingDir` or approach B up front in the ToT table.
 
 
