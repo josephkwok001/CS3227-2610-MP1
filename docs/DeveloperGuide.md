@@ -20,6 +20,14 @@ CS3227 expects a **`release/`** folder containing the latest fat JAR:
 java -jar release/budgie.jar
 ```
 
+Sanity-check repo layout (TA script):
+
+```bash
+./check_mp1_structure.sh .
+```
+
+The `release/` folder is tracked in git; `build/` is gitignored. Re-run `./gradlew release` before submission or tagging a GitHub Release so `release/budgie.jar` matches the current source.
+
 ## Design
 
 ### Architecture
@@ -49,7 +57,6 @@ The four components:
 - **[Logic](#logic-component)** — parse a line, execute a command, return a `CommandResult`.
 - **[Model](#model-component)** — in-memory list of expenses and incomes.
 - **[Storage](#storage-component)** — `data/budgie.txt`.
-
 
 #### Sequence: user types `delete 1`
 
@@ -82,21 +89,11 @@ sequenceDiagram
 
 **Classes:** `seedu.budgie.ui.MainWindow`, `DialogBox`, `Ui` (console), plus `MainApp` / `Launcher`.
 
-The GUI is a JavaFX **`BorderPane`** in `src/main/resources/view/MainWindow.fxml`, styled by `MainWindow.css`:
+The GUI is a JavaFX `AnchorPane` defined in `src/main/resources/view/MainWindow.fxml`, styled by `MainWindow.css`.
 
-- **Top:** app title (“Budgie — personal budget tracker”).
-- **Center:** `ScrollPane` + `VBox` of `DialogBox` bubbles.
-- **Bottom:** input `HBox` (text field + Send).
-
-- `MainWindow` extends `BorderPane`, binds scroll to the dialog list, calls `Budgie.getResponse`, and appends user/Budgie bubbles. It hides the speaker label when the same side speaks twice in a row (`LastSpeaker` enum).
-- **`DialogBox`** — `HBox` aligned left (Budgie) or right (user). Single-line replies use a wrapping `Label`; multi-line replies use **`TextFlow`**:
-  - **`help`** lines (`command — description`): command word in bold monospace, description in normal text.
-  - **`list`** numbered lines and **`summary`** `/category:` lines: monospace styling.
-  - Max bubble width ~400px.
-- Console **`Ui`** prints divider lines and reads `System.in` for `./gradlew runCli`.
-- **`MainApp`** sets minimum window size 480×540. No avatar image files.
-
-**Help text:** `HelpCommand.MESSAGE` uses `command — description` lines (em dash). Only the string constant changed; `execute` still returns `MESSAGE`. User Guide help sample must stay in sync.
+- `MainWindow` binds the scroll pane to the dialog list, sends the text field to `Budgie.getResponse`, and appends `DialogBox` bubbles (user on the right, Budgie on the left).
+- `DialogBox` is a small `HBox` bubble; there are no avatar image files.
+- Console `Ui` prints divider lines and reads `System.in` for `./gradlew runCli`.
 
 The UI component:
 
@@ -169,7 +166,6 @@ Shared user-facing constants live in `seedu.budgie.Messages` (welcome text). `Bu
 - Command words are case-insensitive; descriptions keep the user’s capitalisation.
 - `Parser` asserts that input is non-null (internal assumption).
 - **`MoneyFormatter`** (see [Model](#model-component)) removed duplicated amount formatting in `Expense`, `Income`, and `SummaryCommand`; behaviour matches the User Guide.
-- **GUI (v1.2 polish):** BorderPane chat layout, TextFlow bubbles, formatted `help` display. See [log 17](../logs/17-gui-polish-and-help-format.md). Re-run `./gradlew release` so `release/budgie.jar` includes UI changes.
 - The fat JAR (`./gradlew release` → `release/budgie.jar`) uses `Launcher` as the main class and bundles JavaFX natives for Windows, Linux, and macOS (including Apple Silicon). Testers still need **Java 17**.
 
 ## Testing
@@ -219,7 +215,7 @@ Work is increment-based: one user-visible feature (or one engineering increment 
 
 - `AGENTS.md` records the AI-assisted workflow.
 - After each increment, a session summary is added under `logs/` and a stub is appended to `docs/Reflections.md`. Joseph rewrites stubs in first person.
-- Post–v1.2 engineering logs: [AI-assisted unit tests](../logs/14-ai-unit-tests.md), [Budgie integration tests](../logs/15-budgie-integration-tests.md), [release folder](../logs/16-release-folder.md), [GUI polish and help format](../logs/17-gui-polish-and-help-format.md).
+- Post–v1.2 engineering logs: [AI-assisted unit tests](../logs/14-ai-unit-tests.md), [Budgie integration tests](../logs/15-budgie-integration-tests.md), [release folder](../logs/16-release-folder.md).
 
 ## Acknowledgements
 
@@ -448,7 +444,7 @@ Use case ends. Data is unchanged.
    1. A user who can type ordinary English can complete add / list / delete faster via commands than by building a spreadsheet by hand.
    2. Error messages name the problem (missing amount, negative amount, unknown index) instead of a stack trace.
    3. Command words are case-insensitive; the user does not need to match `help` capitalisation.
-   4. The GUI is a single chat window: type at the bottom, read replies above. Multi-line replies (for example `help`, `list`, `summary`) use formatted bubbles; command names in `help` are shown in monospace.
+   4. The GUI is a single chat window: type at the bottom, read replies above.
 
 3. **Reliability and performance**
    1. A successful mutating command is written to disk before the next prompt, so a normal quit does not lose that command.
@@ -478,8 +474,7 @@ These are **not** in v1.2. Do not treat them as shipped.
 | **Model** | `ExpenseBook` and `Entry` types in memory. |
 | **MoneyFormatter** | Formats amounts for display, save files, and signed summary lines. |
 | **Storage** | Load/save of `data/budgie.txt`. |
-| **UI** | JavaFX `MainWindow` (`BorderPane`) and/or console `Ui`. |
-| **DialogBox** | One chat bubble (user right, Budgie left); may use `TextFlow` for multi-line replies. |
+| **UI** | JavaFX `MainWindow` and/or console `Ui`. |
 | **MVC** | UI displays, Logic handles input, Model holds data; Storage sits beside Model. |
 | **Launcher** | Non-`Application` main class so the fat JAR can start JavaFX. |
 | **FXML** | XML layout for `MainWindow`. |
