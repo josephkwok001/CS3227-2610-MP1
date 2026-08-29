@@ -2,14 +2,35 @@
     -fx-background-color: #f4f1e8;
 }
 
+.app-title {
+    -fx-alignment: center;
+    -fx-background-color: #ebe6d9;
+    -fx-border-color: transparent transparent #c4b896 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 16 12 16;
+    -fx-text-fill: #3d5a2a;
+}
+
+.chat-scroll {
+    -fx-background-color: #f4f1e8;
+    -fx-background: #f4f1e8;
+    -fx-border-color: transparent;
+}
+
+.chat-scroll > .viewport {
+    -fx-background-color: #f4f1e8;
+}
+
 .dialog-list {
     -fx-background-color: #f4f1e8;
-    -fx-padding: 12;
+    -fx-padding: 16;
 }
 
 .user-bubble, .budgie-bubble {
-    -fx-background-radius: 10;
-    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 14 10 14;
 }
 
 .user-bubble {
@@ -19,23 +40,73 @@
 .budgie-bubble {
     -fx-background-color: #ffffff;
     -fx-border-color: #c4b896;
-    -fx-border-radius: 10;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 1);
 }
 
 .dialog-speaker {
+    -fx-font-size: 11px;
     -fx-font-weight: bold;
+    -fx-opacity: 0.85;
     -fx-text-fill: #3d5a2a;
 }
 
 .dialog-message {
-    -fx-text-fill: #2b2b2b;
+    -fx-fill: #2b2b2b;
+    -fx-font-size: 13px;
 }
 
-.button {
+.dialog-message-flow {
+    -fx-line-spacing: 4px;
+}
+
+.dialog-message-command {
+    -fx-fill: #2b4a1c;
+    -fx-font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.dialog-message-separator {
+    -fx-fill: #6b7c5e;
+    -fx-font-size: 13px;
+}
+
+.input-bar {
+    -fx-background-color: #ebe6d9;
+    -fx-border-color: #c4b896 transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.input-field {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8;
+    -fx-border-color: #c4b896;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 8 10 8 10;
+}
+
+.send-button {
     -fx-background-color: #3d5a2a;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
     -fx-text-fill: white;
 }
 
-.text-field {
-    -fx-background-radius: 6;
+.send-button:hover {
+    -fx-background-color: #4a6b34;
+}
+
+.send-button:disabled {
+    -fx-background-color: #9aa88f;
+    -fx-opacity: 0.8;
+}
+
+.label.dialog-message {
+    -fx-text-fill: #2b2b2b;
+    -fx-font-size: 13px;
+    -fx-line-spacing: 3px;
 }

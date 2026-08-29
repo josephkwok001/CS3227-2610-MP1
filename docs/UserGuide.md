@@ -101,6 +101,8 @@ Shows the commands supported in this version.
 
 Format: `help`
 
+In the **GUI**, command names appear in bold monospace; the wording matches the sample below (CLI shows the same text).
+
 Sample input:
 
 ```
@@ -111,14 +113,15 @@ Sample output:
 
 ```
 Here is what I can do for now:
-  help     - show this help message
-  expense  - add an expense (e.g. expense 12.50 /food lunch)
-  income   - add income (e.g. income 2500 /salary August pay)
-  list     - show all expenses and incomes
-  find     - find transactions by category, description, or amount (e.g. find food)
-  summary  - show totals and a breakdown by category
-  delete   - delete a transaction by its list number (e.g. delete 1)
-  bye      - exit Budgie
+
+help — show this help message
+expense — add an expense (e.g. expense 12.50 /food lunch)
+income — add income (e.g. income 2500 /salary August pay)
+list — show all expenses and incomes
+find — find transactions by category, description, or amount (e.g. find food)
+summary — show totals and a breakdown by category
+delete — delete a transaction by its list number (e.g. delete 1)
+bye — exit Budgie
 ```
 
 ### Adding an expense: `expense`

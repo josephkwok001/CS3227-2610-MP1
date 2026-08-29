@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import seedu.budgie.ui.MainWindow;
 
@@ -14,8 +14,8 @@ import seedu.budgie.ui.MainWindow;
  */
 public class MainApp extends Application {
 
-    private static final double MIN_WINDOW_WIDTH = 420.0;
-    private static final double MIN_WINDOW_HEIGHT = 500.0;
+    private static final double MIN_WINDOW_WIDTH = 480.0;
+    private static final double MIN_WINDOW_HEIGHT = 540.0;
 
     /**
      * Loads the main window and shows it.
@@ -26,7 +26,7 @@ public class MainApp extends Application {
     public void start(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/view/MainWindow.fxml"));
-            AnchorPane root = fxmlLoader.load();
+            Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
             stage.setTitle("Budgie");
             stage.setMinWidth(MIN_WINDOW_WIDTH);
