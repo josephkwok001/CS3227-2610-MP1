@@ -27,9 +27,15 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 
    Install guides: [Windows](https://se-education.org/guides/tutorials/javaInstallationWindows.html), [macOS](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-2. Download `budgie.jar` from GitHub Releases **if a v1.2 (or later) JAR is published**. Until then, run from source (`./gradlew run`) or build `./gradlew shadowJar`. The **v1.0** Release JAR does not include `find` or `summary`.
+2. Get **v1.2** `budgie.jar` (includes `find` and `summary`):
 
-3. Copy the JAR into an empty folder. That folder becomes Budgie’s home folder (`data/budgie.txt` is created next to the JAR when you add a transaction).
+   - **Recommended for CS3227 submission / peer testing:** use `release/budgie.jar` in this repository (build with `./gradlew release` if needed). It is a fat JAR with JavaFX bundled.
+   - **Optional:** download from [GitHub Releases](https://github.com/josephkwok001/CS3227-2610-MP1/releases) when a v1.2 (or later) tag is published.
+   - **Developers:** `./gradlew run` from source also works.
+
+   The published **v1.0** GitHub Release JAR does **not** include `find` or `summary`.
+
+3. Copy the JAR into an empty folder (or run from the repo’s `release/` folder). That folder becomes Budgie’s home folder (`data/budgie.txt` is created there when you add a transaction).
 
 4. Open a terminal, `cd` into that folder, and run:
 
@@ -37,9 +43,15 @@ If a term is unfamiliar, see the [Glossary](#glossary).
    java -jar budgie.jar
    ```
 
+   Example from the repository after building:
+
+   ```bash
+   java -jar release/budgie.jar
+   ```
+
    A window titled **Budgie** should open. Type in the text field at the bottom and press **Enter** or **Send**.
 
-   From source instead of the JAR:
+   **From source (developers):**
 
    ```bash
    ./gradlew run
@@ -308,7 +320,7 @@ Budgie writes `data/budgie.txt` in the folder you ran it from (the project root 
 - After `expense`, `income`, or `delete`, the file is updated before the next prompt.
 - If some lines in the file are invalid, Budgie skips them, shows a short warning, and loads the rest.
 
-Editing the file by hand is possible (one line per transaction: `E|12.50|food|lunch` or `I|2500.00|salary|August pay`). If a line is invalid, that line is skipped on the next launch.
+Editing the file by hand is possible (one line per transaction: `E|12.50|food|lunch` or `I|2500.00|salary|August pay`). A description may contain `|` (for example `lunch|extra` is stored as `E|12.50|food|lunch|extra`). If a line is invalid, that line is skipped on the next launch.
 
 ### Exiting: `bye`
 
@@ -382,8 +394,21 @@ There is no transaction numbered 99. Use list to see valid indexes.
 
 If `data/budgie.txt` already exists from an earlier run, `list` may show extra rows. Delete those rows first, or remove the file, before following the numbered steps.
 
+**Path A — from the JAR (recommended for grading):**
+
+1. Ensure **Java 17** is installed (`java -version`).
+2. Build or locate `release/budgie.jar` (run `./gradlew release` from the repo if needed).
+3. Copy `budgie.jar` into an empty folder, `cd` there, and run `java -jar budgie.jar`.
+4. Follow steps 3–19 below (type commands in the Budgie window).
+
+**Path B — from source (developers):**
+
 1. Run `./gradlew check` — tests and Checkstyle should pass.
 2. Run `./gradlew run` — a Budgie chat window should open.
+3. Follow steps 3–19 below.
+
+**Steps 3–19 (both paths):**
+
 3. Type `help` in the text field and press Enter — the output should match the sample under [Viewing help](#viewing-help-help).
 4. Type `expense 12.50 /food lunch` — you should see `Added expense: $12.50 /food lunch`.
 5. Type `income 2500 /salary August pay` — you should see `Added income: $2500.00 /salary August pay`.
@@ -395,7 +420,7 @@ If `data/budgie.txt` already exists from an earlier run, `list` may show extra r
 11. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
 12. Type `list` — only the income should remain, now as number 1.
 13. Type `bye` — you should see the goodbye message, then the window should close.
-14. Run `./gradlew run` again. Type `list` — the income from step 5 should still be there as number 1.
+14. Start Budgie again (`java -jar budgie.jar` or `./gradlew run`). Type `list` — the income from step 5 should still be there as number 1.
 15. Type `budget 800` — you should see the unknown-command message under [Errors](#errors).
 16. Type `expense /food lunch` — you should see the missing-amount message under [Errors](#errors).
 17. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
@@ -404,7 +429,7 @@ If `data/budgie.txt` already exists from an earlier run, `list` may show extra r
 
 If a step above does not match this guide, treat it as a product bug.
 
-You can repeat the same path from source with `./gradlew shadowJar` then `java -jar build/libs/budgie.jar`. The published **v1.0** GitHub Release JAR does not include `find` or `summary`; rebuild the JAR from this source if you need a tester JAR with those commands.
+Path A uses `release/budgie.jar` (v1.2). The published **v1.0** GitHub Release JAR does not include `find` or `summary`.
 
 ## FAQ
 
@@ -440,9 +465,10 @@ You can repeat the same path from source with `./gradlew shadowJar` then `java -
 
 ## Known issues
 
-1. **`./gradlew run` mixes Gradle progress text with the old CLI.** Prefer `./gradlew run` for the GUI, or `java -jar budgie.jar`, when you demo the product. `./gradlew runCli` is the text-only loop and can look messy under Gradle.
+1. **`./gradlew run` mixes Gradle progress text with the old CLI.** Prefer `java -jar release/budgie.jar` (or `./gradlew run` for the GUI) when you demo the product. `./gradlew runCli` is the text-only loop and can look messy under Gradle.
 2. **The save file follows the working directory.** If you launch the JAR from two different folders, you get two different `data/budgie.txt` files.
 3. **There are no automated GUI tests.** Behaviour of the window is checked by following [How to test](#how-to-test-for-peer-testers).
+4. **`./gradlew check` uses an isolated test folder (`build/test-run`).** Automated tests do not read or write your project’s `data/budgie.txt`.
 
 ## Glossary
 
@@ -460,4 +486,4 @@ You can repeat the same path from source with `./gradlew shadowJar` then `java -
 | **Summary** | Totals of income and expenses, including a breakdown by category. |
 | **Index** | 1-based row number from the current `list`. Used by `delete`. |
 | **Data file** | `data/budgie.txt` next to the working directory; auto-saved after changes. |
-| **JAR** | Runnable `budgie.jar` from the GitHub Release. Still requires Java 17. |
+| **JAR** | Runnable `budgie.jar` with JavaFX bundled. Use `release/budgie.jar` in this repo (v1.2), or a GitHub Release when published. Still requires Java 17. |

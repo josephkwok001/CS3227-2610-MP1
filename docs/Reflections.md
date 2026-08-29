@@ -263,4 +263,16 @@ After the refactor pipeline (log 13), I tried the lecture’s AI-assisted unit-t
 - **Engineering judgement:** I should review and delete weak/duplicate tests myself — the lecture says review and consolidate, not accept every generated `@Test`.
 - **Next time:** One “test design only” prompt before code; optional `EntryMatcherTest` only if I keep model-layer tests separate from `FindCommandTest`.
 
+### Increment 16 — release/ folder with fat JAR
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+**Suggested first-person text (edit then keep):**
+
+The course asks for a `release/` folder with the latest fat JAR. I only had `./gradlew shadowJar` writing to gitignored `build/libs/`. I asked Cursor to add a `release` Gradle task that copies `budgie.jar` into `release/` after shadowJar, and to update the README/UG/DG. `./gradlew release` produced a ~10 MB JAR with JavaFX. I still need to run `java -jar release/budgie.jar` myself, commit `release/budgie.jar` for submission if required, and optionally tag a v1.2 GitHub Release.
+
+- **Feature / increment:** `release/budgie.jar` via `./gradlew release`; docs updated.
+- **What to verify:** `./gradlew release`; `java -jar release/budgie.jar`; GUI + find/summary; commit JAR for graders.
+- **How it was verified (agent):** `./gradlew release` + `./gradlew check`.
+- **Next time:** Re-run `./gradlew release` before any submission or GitHub Release tag.
 

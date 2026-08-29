@@ -20,12 +20,14 @@ Run tests and Checkstyle:
 ./gradlew check
 ```
 
-Build a fat JAR (`build/libs/budgie.jar`):
+Build a fat JAR with JavaFX bundled:
 
 ```bash
-./gradlew shadowJar
-java -jar build/libs/budgie.jar
+./gradlew release
+java -jar release/budgie.jar
 ```
+
+Gradle also writes the same file to `build/libs/budgie.jar`. The **`release/`** folder holds the submission copy for CS3227.
 
 Text-only CLI: `./gradlew runCli`.
 
