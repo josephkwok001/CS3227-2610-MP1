@@ -214,7 +214,7 @@ flowchart TB
 Work is increment-based: one user-visible feature (or one engineering increment such as CI) per change set. History is visible on GitHub as [Issues](https://github.com/josephkwok001/CS3227-2610-MP1/issues), [Pull requests](https://github.com/josephkwok001/CS3227-2610-MP1/pulls), and [Releases](https://github.com/josephkwok001/CS3227-2610-MP1/releases) ([v1.0](https://github.com/josephkwok001/CS3227-2610-MP1/releases/tag/v1.0) is outdated — v1.2 JAR with `find` and `summary` is in `release/budgie.jar` until a newer tag is published).
 
 - `AGENTS.md` records the AI-assisted workflow.
-- After each increment, a session summary is added under `logs/` and a stub is appended to `docs/Reflections.md`. Joseph rewrites stubs in first person.
+- After each increment, a session summary is added under `logs/` (with reflection notes). Deep dives in `docs/Reflections.md` cover the most interesting prompting episodes; Joseph rewrites log reflection notes in first person.
 - Post–v1.2 engineering logs: [AI-assisted unit tests](../logs/14-ai-unit-tests.md), [Budgie integration tests](../logs/15-budgie-integration-tests.md), [release folder](../logs/16-release-folder.md).
 
 ## Acknowledgements

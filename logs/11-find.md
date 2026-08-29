@@ -36,3 +36,15 @@
 - v1.0 GitHub Release JAR does not include `find`; rebuild JAR from this source.
 - Increment-01–10 first-person text unchanged (agent appended 11).
 - Did not add `budget`, `summary`, dates, or `edit`.
+
+## Reflection notes
+
+I asked Cursor to add only find KEYWORD, not budget, summary, dates, or edit. It searches category and description as case insensitive substrings, and amount by numeric value so 12.5 matches $12.50 but find 1 does not hit $12.50. Results keep list numbers so delete still makes sense. The unknown command example in the UG is now budget 800 because find food is a real command.
+
+Assumptions the LLM made: original list indexes; amount equality not digit contains; multi word keyword is the rest of the line.
+
+How I verified. `./gradlew check`. find food, find 12.50, find rent, find usage. budget 800 is unknown.
+
+Engineering judgement. Did not add budget/summary. Did not number find results 1..n independently of list.
+
+Next time. Optional summary if find is clean.

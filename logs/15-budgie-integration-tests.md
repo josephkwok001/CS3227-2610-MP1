@@ -123,4 +123,16 @@ No production code changes. No commit unless Joseph asks.
 
 ## ToT takeaway (for reflections later)
 
-Comparing A vs B **before** coding was useful: when A’s `user.dir` hack failed, the ToT table already documented B as the fallback — Joseph could switch without re-deriving the trade-off. Next time, include “Java 17 caches default directory” as a con on approach A in the initial ToT table.
+Comparing A vs B **before** coding was useful: when A's `user.dir` hack failed, the ToT table already documented B as the fallback — Joseph could switch without re-deriving the trade-off. Next time, include "Java 17 caches default directory" as a con on approach A in the initial ToT table.
+
+## Reflection notes
+
+After unit tests (increment 14), I wanted integration tests for Budgie.getResponse(String) that cross Parser, Command, ExpenseBook, and Storage.save without mocking the façade. I used a Tree of Thought prompt first: approach A (@TempDir + default data/budgie.txt path, no production changes) vs approach B (inject Storage via a test constructor). I approved A only. The first implementation failed because System.setProperty("user.dir") does not repoint Path.of("data/budgie.txt") on Java 17. The fix stayed within approach A: Gradle test.workingDir = build/test-run plus @BeforeEach cleanup of data/budgie.txt. `./gradlew check` went green with 79 tests.
+
+Assumptions the LLM made: default Storage path; six scenarios covering add/list, delete + reload, summary net line, unknown budget 800, expense writes file, read-only commands skip save.
+
+How I verified. `./gradlew check` (79 tests). BudgieTest does not read Joseph's real save file.
+
+Engineering judgement. Kept approach A after user.dir failure. Did not add Budgie(Storage) without approval. Some overlap with storage integration tests is intentional (façade vs direct storage).
+
+Next time. Put "Java 17 caches default directory" in the ToT table up front. Consider B if parallel test isolation becomes a problem.

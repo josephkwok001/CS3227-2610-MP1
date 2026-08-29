@@ -1,5 +1,5 @@
 ---
-description: CS3227 MP1 increment workflow — read Reflections, one feature at a time, log and append stubs
+description: CS3227 MP1 increment workflow — read Reflections, one feature at a time, write logs
 alwaysApply: true
 ---
 
@@ -8,6 +8,6 @@ alwaysApply: true
 Always read `AGENTS.md` and `docs/Reflections.md` before coding.
 
 - One feature increment per session. Do not implement later backlog items early.
-- After each increment: `./gradlew check`, keep `docs/UserGuide.md` accurate, write `logs/NN-*.md`, append a factual stub to `docs/Reflections.md`.
-- Never overwrite Joseph's first-person reflection text.
+- After each increment: `./gradlew check`, keep `docs/UserGuide.md` accurate, write `logs/NN-*.md` with reflection notes.
+- Never overwrite Joseph's first-person deep dives in `docs/Reflections.md`.
 - Never add a Features.md file.

@@ -35,3 +35,17 @@
 - Increment-01–03 first-person text should be unchanged (agent only appended 04).
 - `delete` is still not a command; list numbers are display-only.
 - Empty `list` message must match the UG.
+
+## Reflection notes
+
+I asked Cursor to add only list, not delete or save. It added an Entry interface and one insertion-order list, so mixed adds stay in the order I typed them. Lines look like "1. [expense] $12.50 /food lunch". Empty book: No transactions yet. Add an expense or income first.
+
+Assumptions the LLM made: Entry interface plus one ExpenseBook list preserves mixed add order; extra words after list are ignored like help.
+
+How I verified. `./gradlew check`. Add mixed entries then list. list on a fresh run shows the empty message. help includes list.
+
+Prompting vs hand work. Numbered list formatting is easy for the agent. Choosing insertion order vs "all expenses then all incomes" needed a design call (increment 03 already flagged this).
+
+Engineering judgement. Did not implement delete even though numbers look like indexes. Did not replace Expense/Income with one class, only added Entry.
+
+Next time. If delete is next, reuse these 1-based indexes in the UG so testers are not surprised.

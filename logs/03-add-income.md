@@ -36,3 +36,17 @@
 - Increment-01 and 02 first-person text must be unchanged (agent only appended 03).
 - `list` is still not a feature.
 - Whole-dollar amounts display with two decimals (`$2500.00`).
+
+## Reflection notes
+
+I asked Cursor to add only income with the same syntax as expense (income 2500 /salary August pay), and not list, delete, or save. I wanted one issue, one PR, and a User Guide that still says list is not a feature.
+
+Assumptions the LLM made: reuse the expense argument parser and the same amount rules; add a separate Income class rather than a shared Transaction type; display 2500 as $2500.00; invalid income uses INCOME_USAGE, not the expense usage string.
+
+How I verified. Unit tests and `./gradlew check`. Manual income 2500 /salary August pay, income 2500 /salary (missing description), help lists income, list is still unknown.
+
+Prompting vs hand work. Copying expense into income is fast for the agent. Choosing not to introduce list still has to be in the prompt.
+
+Engineering judgement. Shared parseEntry / parseAmount instead of duplicating regex. Kept two model classes for a smaller diff.
+
+Next time. Decide up front whether income/expense should already be one Transaction type, so list does not have to merge two lists.

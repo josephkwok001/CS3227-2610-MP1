@@ -185,4 +185,13 @@ Explain why negative vs zero must stay different messages (User Guide Errors sec
 
 - Skim tests for redundancy with `FindCommandTest` / `DeleteCommandTest`.
 - Confirm prompt text matches what he actually pasted in Cursor.
-- Rewrite increment 14 in first person in `docs/Reflections.md`.
+
+## Reflection notes
+
+After the refactor pipeline (log 13), I tried the lecture's AI assisted unit testing style: a shared rules block, then four focused prompts, EntryMatcher, expanded MoneyFormatterTest, ExpenseBook.delete, and consolidated Parser amount validation. I asked for scenario tables, UG linked cases, and "tests only, no production code." The model produced sensible tests quickly and even found a gap (income 12.555 was not covered before). It also duplicated some scenarios already in FindCommandTest / DeleteCommandTest, and the Parser consolidation failed Checkstyle on the first run until it refactored assertThrows lines.
+
+How I verified. `./gradlew check` green after Checkstyle fixes.
+
+Engineering judgement. I should review and delete weak/duplicate tests myself. The lecture says review and consolidate, not accept every generated @Test.
+
+Next time. One "test design only" prompt before code. Full analysis is in Deep dive 4 in docs/Reflections.md.

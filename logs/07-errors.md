@@ -35,3 +35,15 @@
 - Increment-01–06 first-person / draft text should be unchanged (agent only appended 07).
 - `delete 0` still shows usage, not the unknown-index message.
 - GUI was not added.
+
+## Reflection notes
+
+For this increment I asked Cursor to finish the error handling bullet on the same persist branch: unknown command, missing amount, negative money, and unknown delete index. Some of those already existed as generic usage strings. What I wanted was four messages a peer tester can check against the User Guide. The model treated missing amount as expense with no amount token or a line that starts with /category, and it split negative amounts away from zero / too many decimals. That split is a design call I should own.
+
+Assumptions the LLM made: missing amount for empty args or first token starting with /; negative uses Amount cannot be negative; unknown index and unknown command messages unchanged from prior increments.
+
+How I verified. `./gradlew check`. Type find food, expense /food lunch, expense -1 /food lunch, delete 99 and match the User Guide.
+
+Engineering judgement. Did not add GUI. Did not turn zero amounts into the negative message. Did not treat delete 0 as unknown index (still usage).
+
+Next time. JavaFX GUI.

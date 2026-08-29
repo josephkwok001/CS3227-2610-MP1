@@ -306,4 +306,16 @@ Output: PASS / CONCERNS / FAIL with bullet issues by severity. No code blocks un
 - Rebuild JAR (`./gradlew shadowJar`) before `java -jar` demo if needed.
 - Parser/Storage `parseAmount` duplication still exists — deferred.
 - Did not add budget, dates, or edit.
-- After manual smoke, note pass/fail in this log or increment 13 reflection.
+- After manual smoke, note pass/fail in this log.
+
+## Reflection notes
+
+I ran a three-stage prompt pipeline on a pure refactor: ToT for design (chose MoneyFormatter in model), few shot CoT for a numbered plan, then zero shot implement from that plan only. It centralised 12.50 / $12.50 / -$15.50 formatting without merging Expense and Income. `./gradlew check` stayed green and I did not change the User Guide because outputs should be identical.
+
+Assumptions the LLM made: three methods (formatPlain, formatDisplay, formatSignedDisplay); EntryMatcher keeps BigDecimal.compareTo for amount keywords; Parser/Storage deferred.
+
+How I verified. 52 tests and Checkstyle green. Existing command tests unchanged. Manual find 1 / find 12.5 / negative summary net left for Joseph.
+
+Engineering judgement. Did not merge Expense/Income. Did not bundle Parser parseAmount sharing.
+
+Next time. Optional budget or Parser/Storage amount parsing refactor. Full prompting analysis is in Deep dive 1 in docs/Reflections.md.

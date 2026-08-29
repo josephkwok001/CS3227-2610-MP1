@@ -38,3 +38,11 @@ java -jar release/budgie.jar
 - GUI opens from `release/budgie.jar`.
 - `find` and `summary` work (v1.2 JAR, not old v1.0 GitHub Release).
 - Commit `release/budgie.jar` if the course requires it in the repo (not gitignored).
+
+## Reflection notes
+
+The course asks for a release/ folder with the latest fat JAR. I only had ./gradlew shadowJar writing to gitignored build/libs/. I asked Cursor to add a release Gradle task that copies budgie.jar into release/ after shadowJar, and to update the README/UG/DG. `./gradlew release` produced a ~10 MB JAR with JavaFX.
+
+How I verified. `./gradlew release` and `./gradlew check`. Committed release/budgie.jar for submission.
+
+Next time. Re-run `./gradlew release` before any submission or GitHub Release tag.
