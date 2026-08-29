@@ -276,3 +276,19 @@ The course asks for a `release/` folder with the latest fat JAR. I only had `./g
 - **How it was verified (agent):** `./gradlew release` + `./gradlew check`.
 - **Next time:** Re-run `./gradlew release` before any submission or GitHub Release tag.
 
+### Increment 17 — GUI polish and help formatting
+
+**Status:** Agent draft (Joseph should rewrite this in first person).
+
+**Suggested first-person text (edit then keep):**
+
+I used a ToT prompt to compare three GUI polish levels (CSS-only vs wider bubbles vs BorderPane + TextFlow). I approved Option B first, then asked to try Option C so I could see the difference. C added a title bar, bottom input strip, TextFlow bubbles, and hiding repeated “Budgie” / “You” labels. The help list was still hard to read, so I reformatted only `HelpCommand.MESSAGE` to `command — description` lines and styled command words in the GUI. I did not change other commands or add buttons. I still need to run `./gradlew release` so `release/budgie.jar` matches the new UI, and walk the User Guide tester path myself. Prompts and files are in `logs/17-gui-polish-and-help-format.md`.
+
+- **Feature / increment:** GUI polish + `help` text formatting only.
+- **Prompts used:** ToT (A/B/C) → approve B → implement C → help format fix. See `logs/17-gui-polish-and-help-format.md`.
+- **Assumptions the LLM made:** AddressBook-style chat kept; no command buttons; help em dash format; small `MainApp` tweak for BorderPane.
+- **What to verify:** `./gradlew check`; `./gradlew run` + JAR: `help`, `list`, `summary`, `bye`; UG help sample matches app; rebuild `release/budgie.jar`.
+- **How it was verified (agent):** `./gradlew check` green; no GUI tests.
+- **Engineering judgement:** Did not add WebView, avatars, or new commands. Help text change requires UG sync.
+- **Next time:** Pick one polish option before implementing both B and C; good ToT deep-dive material.
+

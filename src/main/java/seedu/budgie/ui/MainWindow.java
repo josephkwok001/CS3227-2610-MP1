@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import seedu.budgie.Budgie;
@@ -15,9 +15,13 @@ import seedu.budgie.CommandResult;
 /**
  * Controller for the main chat window.
  */
-public class MainWindow extends AnchorPane {
+public class MainWindow extends BorderPane {
 
     private static final double EXIT_DELAY_SECONDS = 1.0;
+
+    private enum LastSpeaker {
+        NONE, USER, BUDGIE
+    }
 
     @FXML
     private ScrollPane scrollPane;
@@ -29,6 +33,7 @@ public class MainWindow extends AnchorPane {
     private Button sendButton;
 
     private Budgie budgie;
+    private LastSpeaker lastSpeaker = LastSpeaker.NONE;
 
     /**
      * Binds the scroll pane to the dialog list so new messages stay in view.
@@ -45,7 +50,8 @@ public class MainWindow extends AnchorPane {
      */
     public void setBudgie(Budgie budgie) {
         this.budgie = budgie;
-        dialogContainer.getChildren().add(DialogBox.ofBudgie(budgie.getWelcomeMessage()));
+        lastSpeaker = LastSpeaker.NONE;
+        addBudgieBubble(budgie.getWelcomeMessage());
     }
 
     /**
@@ -58,10 +64,8 @@ public class MainWindow extends AnchorPane {
             return;
         }
         CommandResult result = budgie.getResponse(input);
-        dialogContainer.getChildren().addAll(
-                DialogBox.ofUser(input),
-                DialogBox.ofBudgie(result.getMessage())
-        );
+        addUserBubble(input);
+        addBudgieBubble(result.getMessage());
         userInput.clear();
         if (result.isExit()) {
             userInput.setDisable(true);
@@ -70,5 +74,17 @@ public class MainWindow extends AnchorPane {
             delay.setOnFinished(event -> Platform.exit());
             delay.play();
         }
+    }
+
+    private void addUserBubble(String text) {
+        boolean showSpeaker = lastSpeaker != LastSpeaker.USER;
+        dialogContainer.getChildren().add(DialogBox.ofUser(text, showSpeaker));
+        lastSpeaker = LastSpeaker.USER;
+    }
+
+    private void addBudgieBubble(String text) {
+        boolean showSpeaker = lastSpeaker != LastSpeaker.BUDGIE;
+        dialogContainer.getChildren().add(DialogBox.ofBudgie(text, showSpeaker));
+        lastSpeaker = LastSpeaker.BUDGIE;
     }
 }
