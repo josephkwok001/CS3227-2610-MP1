@@ -29,3 +29,13 @@
 
 - Do not mark the Release as done until the JAR is attached on GitHub.
 - Testers need Java 17 even with a fat JAR.
+
+## Reflection notes
+
+Packaging was bundled with the GUI increment because a GUI that testers cannot launch from a JAR is not P0. Shadow writes build/libs/budgie.jar with Launcher as the main class, and Gradle pulls JavaFX natives for Windows, Linux, and macOS (including Apple Silicon). Creating the actual GitHub Release is still a click I have to do after this is on master, attaching that JAR, because graders download from Releases.
+
+How I verified. `./gradlew shadowJar` wrote build/libs/budgie.jar (~10 MB). java -jar and GitHub Release left for Joseph.
+
+Engineering judgement. Followed AddressBook style JavaFX classifiers instead of the OpenJFX Gradle plugin.
+
+Next time. Optional P1 only if v1.0 peer tests are clean.

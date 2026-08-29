@@ -38,3 +38,15 @@
 - v1.0 GitHub Release JAR does not include `find` or `summary`; rebuild JAR from this source.
 - Increment-01–11 first-person text unchanged (agent appended 12).
 - Did not add `budget`, dates, or `edit`.
+
+## Reflection notes
+
+I asked Cursor to add only summary, not budget, dates, or edit. Because there is still no budget command, it does not show remaining vs a monthly cap. It shows total income, total expenses, net (income minus expenses), and a breakdown by category. Same category amounts are added together. Empty summary uses the same message as empty list.
+
+Assumptions the LLM made: no remaining budget line without budget; net = income minus expenses; LinkedHashMap first seen category order; extra words after summary ignored like list.
+
+How I verified. `./gradlew check`. summary after the UG's two sample adds. Empty summary. budget 800 still unknown.
+
+Engineering judgement. Did not invent a budget or remaining cap. Did not skip to dates/edit.
+
+Next time. Optional budget if summary is clean, or polish reflections.

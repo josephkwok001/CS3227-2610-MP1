@@ -52,5 +52,17 @@ No new tests (GUI still manual). No commit unless Joseph asks.
 
 ## What the model got wrong / watch
 
-- Option B `user.dir` not used here; C required small `MainApp` change (not pure ui/ view only).
-- Rebuild `release/budgie.jar` after GUI changes before submission.
+- Option B user.dir not used here; C required small MainApp change (not pure ui/ view only).
+- release/budgie.jar was rebuilt in the same commit as the GUI polish (531ba6d).
+
+## Reflection notes
+
+I used a ToT prompt to compare three GUI polish levels (CSS only vs wider bubbles vs BorderPane + TextFlow). I approved Option B first, then asked to try Option C so I could see the difference. C added a title bar, bottom input strip, TextFlow bubbles, and hiding repeated "Budgie" / "You" labels. The help list was still hard to read, so I reformatted only HelpCommand.MESSAGE to use command then description lines (with an em dash between them in the app) and styled command words in the GUI. I did not change other commands or add buttons.
+
+Assumptions the LLM made: AddressBook style chat kept; no command buttons; help em dash format; small MainApp tweak for BorderPane.
+
+How I verified. `./gradlew check` green. No GUI tests. release/budgie.jar updated in the same PR.
+
+Engineering judgement. Did not add WebView, avatars, or new commands. Help text change required UG sync.
+
+Next time. Pick one polish option before implementing both B and C. Full analysis is in Deep dive 3 in docs/Reflections.md.

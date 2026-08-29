@@ -30,3 +30,15 @@
 
 - Do not invent `find` / `budget` / `edit` in the UG.
 - Increment-01–09 first-person text was not rewritten (agent appended 10 only).
+
+## Reflection notes
+
+I asked Cursor to expand the User Guide and Developer Guide using the same section layout as my CS2103 tP (EstateSearch): command summary table, notes on amounts (two decimal places), FAQ, glossary. DG architecture as UI / Logic / Model / Storage, a sequence for delete, then a requirements appendix (scope, user stories, use cases) and NFRs. I did not ask it to add product features.
+
+Assumptions the LLM made: map AB3 style components onto Budgie / ExpenseBook / Storage / MainWindow rather than inventing LogicManager.
+
+How I verified. Docs rewrite only. Skim command summary, FAQ, and DG architecture against the running v1.0 JAR.
+
+Engineering judgement. Kept v1.0 scope. Planned enhancements listed as not shipped.
+
+Next time. Code quality refactor (shared Expense/Income) if there is spare time. Otherwise polish reflections.
