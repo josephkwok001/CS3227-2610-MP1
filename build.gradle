@@ -63,6 +63,20 @@ shadowJar {
     archiveFileName = 'budgie.jar'
 }
 
+tasks.register('copyReleaseJar', Copy) {
+    group = 'distribution'
+    description = 'Copies the fat JAR to release/budgie.jar for submission.'
+    dependsOn shadowJar
+    from(shadowJar.archiveFile)
+    into(layout.projectDirectory.dir('release'))
+}
+
+tasks.register('release') {
+    group = 'distribution'
+    description = 'Builds the fat JAR (with JavaFX) and copies it to release/budgie.jar.'
+    dependsOn copyReleaseJar
+}
+
 run {
     standardInput = System.in
 }

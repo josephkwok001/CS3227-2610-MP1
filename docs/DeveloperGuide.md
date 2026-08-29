@@ -7,9 +7,26 @@ This developer guide describes **v1.2** of Budgie, a personal budget tracker cha
 1. Clone the repository and install **Java 17**.
 2. Run `./gradlew check` to execute unit tests and Checkstyle.
 3. Run `./gradlew run` to start the JavaFX GUI. Use `./gradlew runCli` for the text-only CLI.
-4. Run `./gradlew shadowJar` to build `build/libs/budgie.jar`.
+4. Run `./gradlew release` to build `release/budgie.jar` (fat JAR with JavaFX). Gradle also writes `build/libs/budgie.jar`.
 
 IDE: import the Gradle project. Do not commit IDE-specific files. Runtime data under `data/` is gitignored.
+
+### Build for submission
+
+CS3227 expects a **`release/`** folder containing the latest fat JAR:
+
+```bash
+./gradlew release
+java -jar release/budgie.jar
+```
+
+Sanity-check repo layout (TA script):
+
+```bash
+./check_mp1_structure.sh .
+```
+
+The `release/` folder is tracked in git; `build/` is gitignored. Re-run `./gradlew release` before submission or tagging a GitHub Release so `release/budgie.jar` matches the current source.
 
 ## Design
 
@@ -22,7 +39,7 @@ flowchart TB
   launcher[Launcher / MainApp]
   ui[UI: MainWindow, DialogBox, console Ui]
   logic[Logic: Budgie, Parser, Command]
-  model[Model: ExpenseBook, Entry, Expense, Income]
+  model[Model: ExpenseBook, Entry, Expense, Income, EntryMatcher, MoneyFormatter]
   storage[Storage]
 
   launcher --> ui
@@ -108,7 +125,7 @@ Parsing rules that Logic owns (not the UI):
 
 ### Model component
 
-**Classes:** `seedu.budgie.model.ExpenseBook`, `Entry`, `Expense`, `Income`, `EntryMatcher`.
+**Classes:** `seedu.budgie.model.ExpenseBook`, `Entry`, `Expense`, `Income`, `EntryMatcher`, `MoneyFormatter`.
 
 The Model:
 
@@ -118,6 +135,16 @@ The Model:
 - uses assertions in `Expense` / `Income` constructors for internal “already validated” amounts; user-facing validation happens in Logic.
 
 `Expense` and `Income` are separate types (expense vs income in `list` and in the save file). They share the same field shape (amount, category, description).
+
+**`EntryMatcher`** implements `find` keyword matching: case-insensitive substring on category and description; amount match by numeric equality (`12.5` matches `$12.50`; digit-substring rules reject `find 1` against `$12.50`).
+
+**`MoneyFormatter`** centralises money display and file formatting with `HALF_UP` rounding to two decimal places:
+
+- `formatPlain` — save file and comparisons (e.g. `12.50`);
+- `formatDisplay` — user-facing lines (e.g. `$12.50`);
+- `formatSignedDisplay` — summary totals and net (e.g. `-$15.50`).
+
+Used by `Expense`, `Income`, `EntryMatcher`, and `SummaryCommand`. User-visible output did not change when this class was introduced (refactor only).
 
 ### Storage component
 
@@ -140,28 +167,57 @@ Shared user-facing constants live in `seedu.budgie.Messages` (welcome text). `Bu
 
 - Command words are case-insensitive; descriptions keep the user’s capitalisation.
 - `Parser` asserts that input is non-null (internal assumption).
-- The fat JAR (`./gradlew shadowJar` → `build/libs/budgie.jar`) uses `Launcher` as the main class and bundles JavaFX natives for Windows, Linux, and macOS (including Apple Silicon). Testers still need **Java 17**.
+- **`MoneyFormatter`** (see [Model](#model-component)) removed duplicated amount formatting in `Expense`, `Income`, and `SummaryCommand`; behaviour matches the User Guide.
+- The fat JAR (`./gradlew release` → `release/budgie.jar`) uses `Launcher` as the main class and bundles JavaFX natives for Windows, Linux, and macOS (including Apple Silicon). Testers still need **Java 17**.
 
 ## Testing
 
-- JUnit 5 tests live under `src/test/java`.
-- `ParserTest` covers `help`, `bye`, `list`, `find`, `summary`, `delete`, unknown input, missing amount, negative amount, and other valid/invalid `expense` / `income` cases.
-- `ListCommandTest` checks empty-book output and mixed insertion order.
-- `FindCommandTest` checks category, description, and amount matches, original `list` indexes, and no-match output.
-- `SummaryCommandTest` checks empty-book output, mixed totals, merged category amounts, and income-only output.
-- `DeleteCommandTest` checks a valid delete, an out-of-range index message, and delete on an empty book.
-- `AddExpenseCommandTest` and `AddIncomeCommandTest` check that execute adds to `ExpenseBook`.
-- `HelpCommandTest` checks the help text stays consistent with the User Guide.
-- `StorageTest` covers missing file, round-trip (including `|` in a description), save-after-delete, empty file after deleting the last row, and skipped corrupt lines.
-- Gate: `./gradlew check` (tests + Checkstyle). GitHub Actions runs the same on pushes and pull requests to `master`.
-- There are no automated GUI tests. Use the manual path in the User Guide, or `java -jar build/libs/budgie.jar`.
+JUnit 5 tests live under `src/test/java`. Gate: **`./gradlew check`** (tests + Checkstyle). GitHub Actions runs the same on pushes and pull requests to `master`. There are no automated GUI tests; use the manual path in the User Guide, or `java -jar release/budgie.jar`.
+
+Tests are grouped in three layers:
+
+```mermaid
+flowchart TB
+  unit[Unit: Parser Command Model]
+  storageInt[Integration: Command plus Storage]
+  budgieInt[Integration: Budgie.getResponse]
+  unit --> storageInt --> budgieInt
+```
+
+### Unit tests
+
+| Class | What it proves |
+|---|---|
+| `ParserTest` | `help`, `bye`, `list`, `find`, `summary`, `delete`, unknown input, missing/negative/invalid amounts for `expense` / `income` |
+| `AddExpenseCommandTest`, `AddIncomeCommandTest` | Execute adds to `ExpenseBook` |
+| `ListCommandTest` | Empty-book output and mixed insertion order |
+| `FindCommandTest` | Category, description, amount matches; original `list` indexes; no-match output |
+| `SummaryCommandTest` | Empty book, mixed totals, merged categories, income-only output |
+| `DeleteCommandTest` | Valid delete, out-of-range index, delete on empty book |
+| `HelpCommandTest` | Help text matches User Guide |
+| `EntryMatcherTest` | Find matching rules at model layer (`find 1` vs `$12.50`, `$12.50`, empty keyword) |
+| `MoneyFormatterTest` | Plain, display, signed display, rounding, consistency |
+| `ExpenseBookTest` | `delete` on mixed list, unknown index message |
+| `StorageTest` | Missing file, round-trip (including `\|` in description), save-after-delete, empty file after last delete, skipped corrupt lines |
+
+### Integration tests
+
+| Class | What it proves |
+|---|---|
+| `ExpenseBookStorageIntegrationTest` | `AddExpenseCommand` / `AddIncomeCommand` / `DeleteCommand` → `Storage.save` → `Storage.load`; asserts **file contents and in-memory book** |
+| `BudgieTest` | Full stack via `Budgie.getResponse(String)` (parse → command → book → auto-save); `modifiesData` gate (expense writes file; help / find / summary do not); delete persists across `new Budgie()` |
+
+**`BudgieTest` setup:** uses real `new Budgie()` and default path `data/budgie.txt`. Gradle sets **`test.workingDir`** to `build/test-run` (see `build.gradle`) so tests do not touch the developer’s project `data/budgie.txt`. Java 17 caches the default directory at JVM start, so changing `user.dir` at runtime does not repoint relative paths.
+
+**Count:** 14 test classes, 79 tests (as of v1.2).
 
 ## Software engineering process
 
-Work is increment-based: one user-visible feature (or one engineering increment such as CI) per change set. History is visible on GitHub as [Issues](https://github.com/josephkwok001/CS3227-2610-MP1/issues), [Pull requests](https://github.com/josephkwok001/CS3227-2610-MP1/pulls), and [Release v1.0](https://github.com/josephkwok001/CS3227-2610-MP1/releases/tag/v1.0).
+Work is increment-based: one user-visible feature (or one engineering increment such as CI) per change set. History is visible on GitHub as [Issues](https://github.com/josephkwok001/CS3227-2610-MP1/issues), [Pull requests](https://github.com/josephkwok001/CS3227-2610-MP1/pulls), and [Releases](https://github.com/josephkwok001/CS3227-2610-MP1/releases) ([v1.0](https://github.com/josephkwok001/CS3227-2610-MP1/releases/tag/v1.0) is outdated — v1.2 JAR with `find` and `summary` is in `release/budgie.jar` until a newer tag is published).
 
 - `AGENTS.md` records the AI-assisted workflow.
 - After each increment, a session summary is added under `logs/` and a stub is appended to `docs/Reflections.md`. Joseph rewrites stubs in first person.
+- Post–v1.2 engineering logs: [AI-assisted unit tests](../logs/14-ai-unit-tests.md), [Budgie integration tests](../logs/15-budgie-integration-tests.md), [release folder](../logs/16-release-folder.md).
 
 ## Acknowledgements
 
@@ -407,7 +463,7 @@ These are **not** in v1.2. Do not treat them as shipped.
 
 1. Monthly budget (`budget`) and remaining balance on `summary`.
 2. Optional dates and `edit INDEX`.
-3. Share amount-parsing between `Parser` and `Storage`; reduce duplication between `Expense` and `Income`.
+3. Share amount-parsing between `Parser` and `Storage`; optional merge of `Expense` and `Income` into one transaction type. (`MoneyFormatter` already centralises display and file amount formatting.)
 
 ## Glossary
 
@@ -415,8 +471,10 @@ These are **not** in v1.2. Do not treat them as shipped.
 |---|---|
 | **Command** | An executable user action (`AddExpenseCommand`, `DeleteCommand`, …). |
 | **CommandResult** | Message plus whether the session should end. |
+| **Integration test** | Test that crosses multiple layers (e.g. command + storage, or `Budgie.getResponse` end-to-end). |
 | **Logic** | `Budgie` + `Parser` + `Command` objects. |
 | **Model** | `ExpenseBook` and `Entry` types in memory. |
+| **MoneyFormatter** | Formats amounts for display, save files, and signed summary lines. |
 | **Storage** | Load/save of `data/budgie.txt`. |
 | **UI** | JavaFX `MainWindow` and/or console `Ui`. |
 | **MVC** | UI displays, Logic handles input, Model holds data; Storage sits beside Model. |
