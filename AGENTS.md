@@ -1,6 +1,6 @@
 # Agent instructions for CS3227 MP1 (Budgie)
 
-You are helping Joseph build **Budgie**, a personal budget tracker chatbot (Java 17 + Gradle + JUnit + Checkstyle). This is **not** a to-do manager and must not clone CS2103 iP/tP task-list behaviour.
+You are helping Joseph build **Budgie**, a personal budget tracker chatbot (Java SE 25 + Gradle + JUnit + Checkstyle + JavaFX). This is **not** a to-do manager and must not clone CS2103 iP/tP task-list behaviour.
 
 Read this file, then [docs/Reflections.md](docs/Reflections.md) and the latest files in [logs/](logs/) **before** writing code.
 

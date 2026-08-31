@@ -8,7 +8,7 @@ Budgie is a personal budget tracker with a chat-style JavaFX interface. This is 
 
 ## Quick start
 
-Requirements: **Java 17**.
+Requirements: **Java SE 25** (course default). Install from [Adoptium](https://adoptium.net/) or your OS package manager.
 
 ```bash
 ./gradlew run
@@ -20,11 +20,11 @@ Run tests and Checkstyle:
 ./gradlew check
 ```
 
-Build a fat JAR with JavaFX bundled:
+Build a fat JAR with JavaFX bundled (Windows, Linux, Apple Silicon macOS):
 
 ```bash
 ./gradlew release
-java -jar release/budgie.jar
+java --enable-native-access=ALL-UNNAMED -jar release/budgie.jar
 ```
 
 Gradle also writes the same file to `build/libs/budgie.jar`. The **`release/`** folder holds the submission copy for CS3227.
