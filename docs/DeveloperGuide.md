@@ -4,7 +4,7 @@ This developer guide describes **v1.2** of Budgie, a personal budget tracker cha
 
 ## Setting up
 
-1. Clone the repository and install **Java 17**.
+1. Clone the repository and install **Java SE 25** (Gradle toolchain will download it if missing).
 2. Run `./gradlew check` to execute unit tests and Checkstyle.
 3. Run `./gradlew run` to start the JavaFX GUI. Use `./gradlew runCli` for the text-only CLI.
 4. Run `./gradlew release` to build `release/budgie.jar` (fat JAR with JavaFX). Gradle also writes `build/libs/budgie.jar`.
@@ -17,7 +17,7 @@ CS3227 expects a **`release/`** folder containing the latest fat JAR:
 
 ```bash
 ./gradlew release
-java -jar release/budgie.jar
+java --enable-native-access=ALL-UNNAMED -jar release/budgie.jar
 ```
 
 Sanity-check repo layout (TA script):
@@ -166,11 +166,11 @@ Shared user-facing constants live in `seedu.budgie.Messages` (welcome text). `Bu
 - Command words are case-insensitive; descriptions keep the user’s capitalisation.
 - `Parser` asserts that input is non-null (internal assumption).
 - **`MoneyFormatter`** (see [Model](#model-component)) removed duplicated amount formatting in `Expense`, `Income`, and `SummaryCommand`; behaviour matches the User Guide.
-- The fat JAR (`./gradlew release` → `release/budgie.jar`) uses `Launcher` as the main class and bundles JavaFX natives for Windows, Linux, and macOS (including Apple Silicon). Testers still need **Java 17**.
+- The fat JAR (`./gradlew release` → `release/budgie.jar`) uses `Launcher` as the main class and bundles JavaFX natives for **Windows, Linux, and Apple Silicon macOS**. Testers need **Java SE 25** and should run with `--enable-native-access=ALL-UNNAMED` on Java 22+.
 
 ## Testing
 
-JUnit 5 tests live under `src/test/java`. Gate: **`./gradlew check`** (tests + Checkstyle). GitHub Actions runs the same on pushes and pull requests to `master`. There are no automated GUI tests; use the manual path in the User Guide, or `java -jar release/budgie.jar`.
+JUnit 5 tests live under `src/test/java`. Gate: **`./gradlew check`** (tests + Checkstyle). GitHub Actions runs the same on **ubuntu-latest, windows-latest, and macos-latest** with Java 25. There are no automated GUI tests; use the manual path in the User Guide, or `java --enable-native-access=ALL-UNNAMED -jar release/budgie.jar`.
 
 Tests are grouped in three layers:
 
@@ -434,10 +434,10 @@ Use case ends. Data is unchanged.
 ## Appendix: Non-functional requirements
 
 1. **Technical**
-   1. The product runs on **Java 17**. It does not require a newer JDK language level.
+   1. The product is built and run on **Java SE 25** (CS3227 default). The fat JAR bundles JavaFX natives for Windows, Linux, and Apple Silicon macOS.
    2. The product is a **single-user**, **offline** desktop app with no server and no external database.
    3. Data is stored in one **human-editable text file** (`data/budgie.txt`), not a hidden binary store.
-   4. The same sources build on Windows, macOS, and Linux; the fat JAR bundles JavaFX natives for those platforms.
+   4. The same sources build on Windows, macOS, and Linux; the fat JAR bundles JavaFX natives for Windows, Linux, and Apple Silicon macOS (see User Guide FAQ for Intel Mac).
    5. The app is delivered as a **JAR** (plus Gradle for developers). It must not require an installer.
 
 2. **Usability**

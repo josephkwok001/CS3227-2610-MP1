@@ -8,7 +8,7 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 
 ## How to use this guide
 
-1. [Getting started](#getting-started) — install Java 17, download the JAR, open the window.
+1. [Getting started](#getting-started) — install Java SE 25, download the JAR, open the window.
 2. [Command summary](#command-summary) — one-line formats and examples.
 3. [Notes about command format](#notes-about-command-format) — amounts, categories, indexes.
 4. [Features](#features) — full formats, sample input, and sample output.
@@ -19,17 +19,17 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 
 ## Getting started
 
-1. Ensure you have **Java 17** or later (`java -version`).
+1. Ensure you have **Java SE 25** (`java -version`). CS3227 uses Java 25 as the default; older JDKs cannot run the v1.2 JAR.
 
    **Windows:** Start Menu → Command Prompt or PowerShell → `java -version`.
 
    **macOS:** Terminal → `java -version`.
 
-   Install guides: [Windows](https://se-education.org/guides/tutorials/javaInstallationWindows.html), [macOS](https://se-education.org/guides/tutorials/javaInstallationMac.html).
+   Install guides: [Windows](https://se-education.org/guides/tutorials/javaInstallationWindows.html), [macOS](https://se-education.org/guides/tutorials/javaInstallationMac.html). [Adoptium Temurin 25](https://adoptium.net/) works on Windows, Linux, and macOS.
 
 2. Get **v1.2** `budgie.jar` (includes `find` and `summary`):
 
-   - **Recommended for CS3227 submission / peer testing:** use `release/budgie.jar` in this repository (build with `./gradlew release` if needed). It is a fat JAR with JavaFX bundled.
+   - **Recommended for CS3227 submission / peer testing:** use `release/budgie.jar` in this repository (build with `./gradlew release` if needed). It is a fat JAR with JavaFX bundled for **Windows, Linux, and Apple Silicon macOS**.
    - **Optional:** download from [GitHub Releases](https://github.com/josephkwok001/CS3227-2610-MP1/releases) when a v1.2 (or later) tag is published.
    - **Developers:** `./gradlew run` from source also works.
 
@@ -40,14 +40,16 @@ If a term is unfamiliar, see the [Glossary](#glossary).
 4. Open a terminal, `cd` into that folder, and run:
 
    ```bash
-   java -jar budgie.jar
+   java --enable-native-access=ALL-UNNAMED -jar budgie.jar
    ```
 
    Example from the repository after building:
 
    ```bash
-   java -jar release/budgie.jar
+   java --enable-native-access=ALL-UNNAMED -jar release/budgie.jar
    ```
+
+   On **Java 22+**, the `--enable-native-access=ALL-UNNAMED` flag lets JavaFX load its bundled native libraries. Omitting it may still work on some machines but can fail on Java 25.
 
    A window titled **Budgie** should open. Type in the text field at the bottom and press **Enter** or **Send**.
 
@@ -399,9 +401,9 @@ If `data/budgie.txt` already exists from an earlier run, `list` may show extra r
 
 **Path A — from the JAR (recommended for grading):**
 
-1. Ensure **Java 17** is installed (`java -version`).
+1. Ensure **Java SE 25** is installed (`java -version`).
 2. Build or locate `release/budgie.jar` (run `./gradlew release` from the repo if needed).
-3. Copy `budgie.jar` into an empty folder, `cd` there, and run `java -jar budgie.jar`.
+3. Copy `budgie.jar` into an empty folder, `cd` there, and run `java --enable-native-access=ALL-UNNAMED -jar budgie.jar`.
 4. Follow steps 3–19 below (type commands in the Budgie window).
 
 **Path B — from source (developers):**
@@ -423,7 +425,7 @@ If `data/budgie.txt` already exists from an earlier run, `list` may show extra r
 11. Type `delete 1` — you should see `Deleted: [expense] $12.50 /food lunch`.
 12. Type `list` — only the income should remain, now as number 1.
 13. Type `bye` — you should see the goodbye message, then the window should close.
-14. Start Budgie again (`java -jar budgie.jar` or `./gradlew run`). Type `list` — the income from step 5 should still be there as number 1.
+14. Start Budgie again (`java --enable-native-access=ALL-UNNAMED -jar budgie.jar` or `./gradlew run`). Type `list` — the income from step 5 should still be there as number 1.
 15. Type `budget 800` — you should see the unknown-command message under [Errors](#errors).
 16. Type `expense /food lunch` — you should see the missing-amount message under [Errors](#errors).
 17. Type `expense -1 /food lunch` — you should see `Amount cannot be negative.`
@@ -437,7 +439,7 @@ Path A uses `release/budgie.jar` (v1.2). The published **v1.0** GitHub Release J
 ## FAQ
 
 **Q: How do I transfer my data to another computer?**
-**A:** Copy `data/budgie.txt` from the old home folder into a `data/` folder next to `budgie.jar` on the new computer. You still need Java 17 there.
+**A:** Copy `data/budgie.txt` from the old home folder into a `data/` folder next to `budgie.jar` on the new computer. You still need **Java SE 25** there.
 
 **Q: Do I need to save before I quit?**
 **A:** No. Successful `expense`, `income`, and `delete` commands already wrote the file. `bye` only closes the session.
@@ -455,7 +457,7 @@ Path A uses `release/budgie.jar` (v1.2). The published **v1.0** GitHub Release J
 **A:** Yes. `find` prints the same numbers as `list`. `delete 1` still means the first row of the full list.
 
 **Q: Which operating systems does Budgie run on?**
-**A:** Windows, macOS, and Linux, as long as you use **Java 17** (or later) with the fat JAR.
+**A:** **Windows, Linux, and macOS (Apple Silicon).** The fat JAR bundles JavaFX natives for those platforms. Use **Java SE 25** and run with `java --enable-native-access=ALL-UNNAMED -jar budgie.jar`. Intel-based Macs are not covered by the bundled macOS natives; use Windows/Linux, ask a classmate to test on your OS via the forum, or run from source with `./gradlew run`.
 
 **Q: Do I need programming knowledge?**
 **A:** No. You only need to type the commands in this guide.
@@ -468,10 +470,12 @@ Path A uses `release/budgie.jar` (v1.2). The published **v1.0** GitHub Release J
 
 ## Known issues
 
-1. **`./gradlew run` mixes Gradle progress text with the old CLI.** Prefer `java -jar release/budgie.jar` (or `./gradlew run` for the GUI) when you demo the product. `./gradlew runCli` is the text-only loop and can look messy under Gradle.
+1. **`./gradlew run` mixes Gradle progress text with the old CLI.** Prefer `java --enable-native-access=ALL-UNNAMED -jar release/budgie.jar` (or `./gradlew run` for the GUI) when you demo the product. `./gradlew runCli` is the text-only loop and can look messy under Gradle.
 2. **The save file follows the working directory.** If you launch the JAR from two different folders, you get two different `data/budgie.txt` files.
 3. **There are no automated GUI tests.** Behaviour of the window is checked by following [How to test](#how-to-test-for-peer-testers).
 4. **`./gradlew check` uses an isolated test folder (`build/test-run`).** Automated tests do not read or write your project’s `data/budgie.txt`.
+5. **Java 22+ may require `--enable-native-access=ALL-UNNAMED`** when running `java -jar` so JavaFX can load bundled native libraries.
+6. **One fat JAR cannot ship both Intel and Apple Silicon macOS natives** at the same path. The submission JAR targets Apple Silicon macOS; Intel Mac users should use another OS or run from source.
 
 ## Glossary
 
@@ -489,4 +493,4 @@ Path A uses `release/budgie.jar` (v1.2). The published **v1.0** GitHub Release J
 | **Summary** | Totals of income and expenses, including a breakdown by category. |
 | **Index** | 1-based row number from the current `list`. Used by `delete`. |
 | **Data file** | `data/budgie.txt` next to the working directory; auto-saved after changes. |
-| **JAR** | Runnable `budgie.jar` with JavaFX bundled. Use `release/budgie.jar` in this repo (v1.2), or a GitHub Release when published. Still requires Java 17. |
+| **JAR** | Runnable `budgie.jar` with JavaFX bundled. Use `release/budgie.jar` in this repo (v1.2), or a GitHub Release when published. Requires **Java SE 25** and `--enable-native-access=ALL-UNNAMED` on Java 22+. |

@@ -10,8 +10,9 @@ repositories {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 checkstyle {
@@ -22,8 +23,9 @@ dependencies {
     String jUnitVersion = '5.10.2'
     String javaFxVersion = '17.0.7'
 
-    // Include several OS classifiers so the fat JAR can start on common lab machines.
-    String[] platforms = ['win', 'mac', 'mac-aarch64', 'linux']
+    // win / linux / mac-aarch64: one native set per OS family (dylibs cannot coexist at the same jar path).
+    // Matches Apple Silicon macOS and all common Windows/Linux lab machines.
+    String[] platforms = ['win', 'linux', 'mac-aarch64']
     String[] javafxModules = ['base', 'graphics', 'controls', 'fxml']
     platforms.each { platform ->
         javafxModules.each { module ->
